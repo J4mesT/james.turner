@@ -5,38 +5,54 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Portfolio — Smooth Scroll + Scatter Text</title>
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <!-- Top navigation -->
+  <!-- Top navigation with social links -->
   <nav class="site-nav" aria-label="Primary">
-    <ul>
-      <li><a href="#home">Home</a></li>
-      <li><a href="#about">About</a></li>
-      <li><a href="#projects">Projects</a></li>
-      <li><a href="#contact">Contact</a></li>
-    </ul>
+    <div class="nav-container">
+      <ul class="nav-links">
+        <li><a href="#home">Home</a></li>
+        <li><a href="#about">About</a></li>
+        <li><a href="#projects">Projects</a></li>
+      </ul>
+      <div class="social-links">
+        <a href="https://github.com/" target="_blank" aria-label="GitHub">
+          <i class="fab fa-github"></i>
+        </a>
+        <a href="https://linkedin.com/" target="_blank" aria-label="LinkedIn">
+          <i class="fab fa-linkedin"></i>
+        </a>
+        <a href="https://twitter.com/" target="_blank" aria-label="Twitter">
+          <i class="fab fa-twitter"></i>
+        </a>
+        <a href="mailto:your@email.com" aria-label="Email">
+          <i class="fas fa-envelope"></i>
+        </a>
+      </div>
+    </div>
   </nav>
-
+  
   <!-- Custom Cursor -->
   <div class="cursor"></div>
-
+  
   <!-- Main content -->
   <div id="scroll-container">
     <section id="home" class="hero">
-      <h1 class="scatter-text">My Awesome<br>Portfolio</h1>
+      <h1 class="scatter-text">
+        <span class="intro-text">portfolio of</span><br>
+        first last
+      </h1>
     </section>
-
     <section id="about" class="about">
-      <h2>About Me</h2>
-      <p>Write a little bit about yourself here. This section demonstrates the smooth native scroll linked to the transform animation.</p>
+      <h1 class="section-title">About Me</h1>
+      <p>Your custom about me content goes here. Write whatever you want about yourself, your skills, experience, etc.</p>
     </section>
-
     <section id="projects" class="projects">
       <h2>My Projects</h2>
       <p>Describe your work, portfolio projects, links, etc.</p>
     </section>
-
     <section id="contact" class="contact">
       <h2>Contact Me</h2>
       <p>Email, social links, or a contact form here.</p>
