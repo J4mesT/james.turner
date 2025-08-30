@@ -1,4 +1,4 @@
-/* ---------------- allow native scrolling, but hide visible scrollbars ------------- */
+/* Global + typography */
 html, body {
   width: 100%;
   height: 100%;
@@ -6,30 +6,34 @@ html, body {
   padding: 0;
   font-family: 'Playfair Display', serif;
   cursor: none !important;
-  overflow: auto; /* allow native scroll */
+  overflow: auto;
+  scroll-behavior: smooth;
 }
 
+/* while scattering is locked, prevent native scroll */
+body.scatter-locked {
+  overflow: hidden;
+  touch-action: none;
+}
 
-/* hide scrollbars but keep scrolling functional */
+/* hide scrollbars but keep scrolling functional when unlocked */
 html::-webkit-scrollbar, body::-webkit-scrollbar { display: none; }
-html { -ms-overflow-style: none; } /* IE/Edge */
-body { scrollbar-width: none; } /* Firefox */
-
+html { -ms-overflow-style: none; }
+body { scrollbar-width: none; }
 
 *, *::before, *::after {
-  cursor: none !important;
   box-sizing: border-box;
+  cursor: none !important;
 }
 
+/* Container + sections */
 #scroll-container {
   position: relative;
   width: 100%;
-  will-change: transform;
 }
 
-/* Ensure enough space so scrolling actually happens */
 section {
-  min-height: 100vh; /* full screen each */
+  min-height: 100vh;
   padding: 60px;
   display: flex;
   flex-direction: column;
@@ -44,13 +48,13 @@ section {
 .contact { background: #b3b3b3; }
 
 .hero h1 {
-  font-size: 10vw;
+  font-size: clamp(36px, 10vw, 120px);
   font-weight: 900;
-  line-height: 1.1;
+  line-height: 1.05;
   margin: 0;
 }
 
-/* Cursor */
+/* Custom cursor */
 .cursor {
   position: fixed;
   top: 0; left: 0;
@@ -59,31 +63,36 @@ section {
   border-radius: 50%;
   pointer-events: none;
   transform: translate(-50%, -50%);
-  z-index: 9999;
+  z-index: 10010;
   will-change: transform;
+  box-shadow: 0 6px 18px rgba(66,133,244,0.18);
+  transition: transform 0.1s ease-out, background 0.3s ease, opacity 0.3s ease;
 }
 
 /* Scatter effect */
-.scatter-text { position: relative; display: inline-block; }
-.scatter-text span {
+.scatter-text { 
+  position: relative; 
+  display: inline-block; 
+  overflow: visible; /* allow characters to fly out */
+}
+
+.scatter-text .char {
   display: inline-block;
-  transition: transform 1s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.6s ease;
+  position: relative;
+  will-change: transform, opacity;
+  transition: transform 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94), opacity 0.6s ease;
+  transform-origin: center center;
+  white-space: pre; /* preserve spaces */
 }
-.scatter-text.scattered span {
-  opacity: 0.8;
-}
-/* smooth native anchor scrolling */
-html { scroll-behavior: smooth; }
 
 /* Top nav */
 .site-nav {
   position: fixed;
   top: 18px;
   right: 24px;
-  z-index: 10010; /* above cursor and content */
-  pointer-events: auto; /* links should be clickable even with cursor:none */
+  z-index: 10020;
+  pointer-events: auto;
 }
-
 .site-nav ul {
   list-style: none;
   margin: 0;
@@ -92,26 +101,21 @@ html { scroll-behavior: smooth; }
   gap: 10px;
   align-items: center;
 }
-
 .site-nav a {
   display: inline-block;
   text-decoration: none;
   font-weight: 600;
   padding: 8px 12px;
   border-radius: 8px;
-  background: rgba(255,255,255,0.6);
+  background: rgba(255,255,255,0.62);
   color: #222;
   backdrop-filter: blur(6px);
-  transition: background 200ms, color 200ms, transform 120ms;
+  transition: background 180ms, color 180ms, transform 120ms;
 }
-
 .site-nav a:hover,
-.site-nav a:focus {
-  transform: translateY(-2px);
-}
-
+.site-nav a:focus { transform: translateY(-2px); }
 .site-nav a.active {
   background: #4285f4;
-  color: white;
-  box-shadow: 0 6px 18px rgba(66,133,244,0.18);
+  color: #fff;
+  box-shadow: 0 6px 18px rgba(66,133,244,0.16);
 }

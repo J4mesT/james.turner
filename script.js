@@ -1,143 +1,212 @@
+'use strict';
+
+/*
+  Robust scroll trigger:
+  - checks hero.getBoundingClientRect() (works even when scroll events are strange)
+  - IntersectionObserver fallback
+  - listens to scroll/wheel/touchmove
+  - keep click toggle for instant verification
+*/
+
+// expose scatter for debugging
+window.__scatter = null;
+
+class ScatterText {
+  constructor(element) {
+    this.element = element || null;
+    this.chars = [];
+    this.isScattered = false;
+    if (this.element) this._wrapCharsPreservingBR();
+  }
+
+  _wrapCharsPreservingBR() {
+    const frag = document.createDocumentFragment();
+    const nodes = Array.from(this.element.childNodes);
+
+    nodes.forEach(node => {
+      if (node.nodeType === Node.TEXT_NODE) {
+        const text = node.textContent;
+        for (const ch of text) {
+          const span = document.createElement('span');
+          span.className = 'char';
+          span.textContent = ch === ' ' ? '\u00A0' : ch;
+          this.chars.push(span);
+          frag.appendChild(span);
+        }
+      } else if (node.nodeName === 'BR') {
+        frag.appendChild(document.createElement('br'));
+      } else {
+        // flatten other nodes' text as chars
+        const inner = node.textContent || '';
+        for (const ch of inner) {
+          const span = document.createElement('span');
+          span.className = 'char';
+          span.textContent = ch === ' ' ? '\u00A0' : ch;
+          this.chars.push(span);
+          frag.appendChild(span);
+        }
+      }
+    });
+
+    this.element.innerHTML = '';
+    this.element.appendChild(frag);
+  }
+
+  scatter(intensity = 1) {
+    if (!this.element || this.isScattered) return;
+    this.isScattered = true;
+
+    this.chars.forEach((span, index) => {
+      const angle = Math.random() * Math.PI * 2;
+      const distance = (90 + Math.random() * 170) * intensity;
+      const x = Math.cos(angle) * distance;
+      const y = Math.sin(angle) * distance;
+      const rotation = (Math.random() - 0.5) * 360;
+      const scale = 0.6 + Math.random() * 0.7;
+
+      setTimeout(() => {
+        span.style.transform = `translate3d(${x}px, ${y}px, 0) rotate(${rotation}deg) scale(${scale})`;
+        span.style.opacity = '0.25';
+      }, index * 18);
+    });
+  }
+
+  gather() {
+    if (!this.element || !this.isScattered) return;
+    this.isScattered = false;
+
+    this.chars.forEach((span, index) => {
+      setTimeout(() => {
+        span.style.transform = 'translate3d(0,0,0) rotate(0deg) scale(1)';
+        span.style.opacity = '1';
+      }, index * 14);
+    });
+  }
+
+  toggle() {
+    if (this.isScattered) this.gather(); else this.scatter();
+  }
+}
+
+/* ---------- initialization & cursor ---------- */
 document.addEventListener('DOMContentLoaded', () => {
-  /* ---------------- Custom Cursor ---------------- */
+  // cursor setup
   const cursor = document.querySelector('.cursor');
-  let mouseX = 0, mouseY = 0, posX = 0, posY = 0, vX = 0, vY = 0;
-  const mass = 0.2, damping = 0.7;
-  let cursorHalfW = 12.5, cursorHalfH = 12.5;
+  let mouseX = 0, mouseY = 0, cursorX = 0, cursorY = 0;
 
-  if (cursor) {
-    const rect = cursor.getBoundingClientRect();
-    cursorHalfW = rect.width / 2;
-    cursorHalfH = rect.height / 2;
-    window.addEventListener('resize', () => {
-      const r = cursor.getBoundingClientRect();
-      cursorHalfW = r.width / 2; cursorHalfH = r.height / 2;
-    });
+  document.addEventListener('mousemove', (e) => {
+    mouseX = e.clientX; mouseY = e.clientY;
+  });
 
-    document.addEventListener('mousemove', e => { mouseX = e.clientX; mouseY = e.clientY; });
+  function animateCursor() {
+    cursorX += (mouseX - cursorX) * 0.15;
+    cursorY += (mouseY - cursorY) * 0.15;
+    if (cursor) cursor.style.transform = `translate(${cursorX - 12.5}px, ${cursorY - 12.5}px)`;
+    requestAnimationFrame(animateCursor);
+  }
+  animateCursor();
 
-    (function animateCursor(){
-      const ax = (mouseX - posX) * mass;
-      const ay = (mouseY - posY) * mass;
-      vX = (vX + ax) * damping;
-      vY = (vY + ay) * damping;
-      posX += vX; posY += vY;
-
-      const speed = Math.hypot(vX, vY);
-      const scale = 1 + Math.min(speed / 20, 0.5);
-      const angle = Math.atan2(vY, vX) * 180 / Math.PI;
-
-      const cx = posX - cursorHalfW;
-      const cy = posY - cursorHalfH;
-      cursor.style.transform = `translate(${cx}px, ${cy}px) rotate(${angle}deg) scale(${scale}, ${2 - scale})`;
-
-      requestAnimationFrame(animateCursor);
-    })();
+  // instantiate scatter
+  const titleEl = document.querySelector('.scatter-text');
+  const hero = document.querySelector('.hero');
+  let scatterTitle = null;
+  if (titleEl) {
+    scatterTitle = new ScatterText(titleEl);
+    // quick test toggle by clicking the title
+    titleEl.addEventListener('click', () => scatterTitle.toggle());
+    window.__scatter = scatterTitle; // expose for console tests
   }
 
-  /* ---------------- Elements + Smooth scroll (native) ---------------- */
-  const container = document.querySelector('#scroll-container');
-  if (!container) {
-    console.warn('#scroll-container not found — aborting smooth scroll script.');
-    return;
-  }
+  // unlock scrolling (in case scatter-locked was present)
+  // keep short delay so visual doesn't jump
+  setTimeout(() => document.body.classList.remove('scatter-locked'), 350);
 
-  let scrollTarget = window.scrollY;
-  let scrollCurrent = window.scrollY;
-  const ease = 0.08;
+  /* ---------- robust scroll detection ---------- */
 
-  window.addEventListener('scroll', () => {
-    scrollTarget = window.scrollY;
-  }, { passive: true });
-
-  function smoothScroll() {
-    scrollCurrent += (scrollTarget - scrollCurrent) * ease;
-    if (Math.abs(scrollTarget - scrollCurrent) < 0.01) scrollCurrent = scrollTarget;
-    container.style.transform = `translateY(${-scrollCurrent}px)`;
-    requestAnimationFrame(smoothScroll);
-  }
-  smoothScroll();
-
-  /* ---------------- Scatter effect ---------------- */
-  const title = document.querySelector('.scatter-text');
-
-  function splitText(el) {
-    if (!el) return;
-    if (el.querySelector('span')) return;
-    const html = el.innerHTML.replace(/<br\s*\/?>/gi, '\n');
-    el.innerHTML = '';
-    for (let ch of html) {
-      if (ch === '\n') { el.appendChild(document.createElement('br')); continue; }
-      const span = document.createElement('span');
-      span.textContent = (ch === ' ') ? '\u00A0' : ch;
-      el.appendChild(span);
+  // primary check using hero bounding rect (very reliable)
+  function checkScrollState() {
+    if (!scatterTitle || !hero) return;
+    const rect = hero.getBoundingClientRect();
+    // scrolledPast becomes true as soon as you scroll the hero off the top a bit
+    const scrolledPast = rect.top < -8; // tiny tolerance so small jitters don't trigger
+    if (scrolledPast && !scatterTitle.isScattered) {
+      const intensity = Math.min(2, 1 + Math.abs(rect.top) / window.innerHeight);
+      scatterTitle.scatter(intensity);
+    } else if (!scrolledPast && scatterTitle.isScattered) {
+      scatterTitle.gather();
     }
   }
-  splitText(title);
 
-  let spans = title ? [...title.querySelectorAll('span')] : [];
-
-  function assignRandomTargets() {
-    spans = title ? [...title.querySelectorAll('span')] : [];
-    spans.forEach(span => {
-      span.dataset.tx = ((Math.random() - 0.5) * window.innerWidth).toFixed(1);
-      span.dataset.ty = ((Math.random() - 0.5) * window.innerHeight).toFixed(1);
-      span.dataset.r  = ((Math.random() - 0.5) * 720).toFixed(1);
-      span.style.willChange = 'transform';
-      if (!span.style.transition) span.style.transition = 'transform 700ms cubic-bezier(.2,.8,.2,1), opacity 400ms ease';
+  // attach listeners: scroll, wheel, touchmove -> all call checkScrollState via rAF
+  let pending = false;
+  function scheduleCheck() {
+    if (pending) return;
+    pending = true;
+    requestAnimationFrame(() => {
+      checkScrollState();
+      pending = false;
     });
   }
-  assignRandomTargets();
-  window.addEventListener('resize', () => setTimeout(assignRandomTargets, 120));
+  window.addEventListener('scroll', scheduleCheck, { passive: true });
+  window.addEventListener('wheel', scheduleCheck, { passive: true });
+  window.addEventListener('touchmove', scheduleCheck, { passive: true });
 
-  // --- NEW scatter-before-scroll logic ---
-  let scatterProgress = 0; // 0 → start, 1 → fully scattered
-  const scatterSpeed = 0.002; // adjust sensitivity
-  let scatterDone = false;
-
-  window.addEventListener("wheel", (e) => {
-    if (scatterDone) return; // already unlocked
-    e.preventDefault(); // block native scroll
-
-    scatterProgress += e.deltaY * scatterSpeed;
-    scatterProgress = Math.min(Math.max(scatterProgress, 0), 1);
-
-    spans.forEach(span => {
-      const tx = span.dataset.tx * scatterProgress;
-      const ty = span.dataset.ty * scatterProgress;
-      const r  = span.dataset.r  * scatterProgress;
-      span.style.transform = `translate(${tx}px, ${ty}px) rotate(${r}deg)`;
-      span.style.opacity = 0.9 * scatterProgress + 0.1;
-    });
-
-    if (scatterProgress >= 1) {
-      scatterDone = true;
-      document.body.classList.remove("locked"); // allow scroll
-    }
-  }, { passive: false });
-
-  /* ---------------- Nav active link highlighting ---------------- */
-  const navLinks = document.querySelectorAll('.site-nav a');
-  const sections = document.querySelectorAll('section[id]');
-  if (sections.length && navLinks.length) {
-    const obs = new IntersectionObserver((entries) => {
+  // intersection observer fallback (fires when hero leaves/enters viewport)
+  if (hero && window.IntersectionObserver) {
+    const io = new IntersectionObserver(entries => {
       entries.forEach(entry => {
-        const id = entry.target.id;
-        const link = document.querySelector(`.site-nav a[href="#${id}"]`);
-        if (entry.isIntersecting) {
-          navLinks.forEach(l => l.classList.remove('active'));
-          if (link) link.classList.add('active');
+        if (!scatterTitle) return;
+        if (!entry.isIntersecting && !scatterTitle.isScattered) {
+          scatterTitle.scatter();
+        } else if (entry.isIntersecting && scatterTitle.isScattered) {
+          scatterTitle.gather();
         }
       });
-    }, { root: null, rootMargin: '0px', threshold: 0.55 });
-    sections.forEach(s => obs.observe(s));
+    }, { root: null, threshold: 0.1 });
+    io.observe(hero);
   }
 
-  // quick sync after keyboard navigation
-  window.addEventListener('keydown', (e) => {
-    if (['PageDown','PageUp','ArrowDown','ArrowUp','Home','End'].includes(e.key)) {
-      setTimeout(() => { scrollTarget = window.scrollY; }, 60);
+  // initial run (in case page initially loaded scrolled)
+  requestAnimationFrame(checkScrollState);
+
+  /* ---------- nav active state (unchanged) ---------- */
+  function updateActiveNav() {
+    const sections = document.querySelectorAll('section[id]');
+    const navLinks = document.querySelectorAll('.site-nav a');
+    let currentSection = 'home';
+
+    sections.forEach(section => {
+      const rect = section.getBoundingClientRect();
+      if (rect.top <= 100 && rect.bottom >= 100) {
+        currentSection = section.id;
+      }
+    });
+
+    navLinks.forEach(link => {
+      link.classList.remove('active');
+      if (link.getAttribute('href') === `#${currentSection}`) {
+        link.classList.add('active');
+      }
+    });
+  }
+  window.addEventListener('scroll', updateActiveNav, { passive: true });
+
+  /* ---------- cursor hover effects (using same cursorX/local cursorY) ---------- */
+  document.addEventListener('mouseover', (e) => {
+    if (!cursor) return;
+    if (e.target.closest('a, button, [role="button"]')) {
+      cursor.style.transform = `translate(${cursorX - 20}px, ${cursorY - 20}px) scale(1.6)`;
+      cursor.style.background = '#ff6b6b';
     }
-  }, { passive: true });
+  });
+  document.addEventListener('mouseout', (e) => {
+    if (!cursor) return;
+    if (e.target.closest('a, button, [role="button"]')) {
+      cursor.style.transform = `translate(${cursorX - 12.5}px, ${cursorY - 12.5}px) scale(1)`;
+      cursor.style.background = '#4285f4';
+    }
+  });
+  document.addEventListener('mouseenter', () => { if (cursor) cursor.style.opacity = '1'; });
+  document.addEventListener('mouseleave', () => { if (cursor) cursor.style.opacity = '0'; });
 
 }); // DOMContentLoaded
