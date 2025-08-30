@@ -1,176 +1,196 @@
 'use strict';
 
-window.__scatter = null;
-
 class ScatterText {
   constructor(element) {
-    this.element = element || null;
+    this.element = element;
     this.chars = [];
-    this.isScattered = false;
-    if (this.element) this._wrapCharsPreservingBR();
+    this.transforms = [];
+    this.currentProgress = 0;
+    this.targetProgress = 0;
+    this.originalHTML = '';
+    this.init();
   }
 
-  _wrapCharsPreservingBR() {
-    const frag = document.createDocumentFragment();
-    const nodes = Array.from(this.element.childNodes);
-    nodes.forEach(node => {
-      if (node.nodeType === Node.TEXT_NODE) {
-        for (const ch of node.textContent) {
-          const span = document.createElement('span');
-          span.className = 'char';
-          span.textContent = ch === ' ' ? '\u00A0' : ch;
-          this.chars.push(span);
-          frag.appendChild(span);
-        }
-      } else if (node.nodeName === 'BR') {
-        frag.appendChild(document.createElement('br'));
-      } else {
-        for (const ch of (node.textContent || '')) {
-          const span = document.createElement('span');
-          span.className = 'char';
-          span.textContent = ch === ' ' ? '\u00A0' : ch;
-          this.chars.push(span);
-          frag.appendChild(span);
-        }
-      }
-    });
+  init() {
+    // Store original HTML only once
+    if (!this.originalHTML) {
+      this.originalHTML = this.element.innerHTML;
+    }
+
+    const heroHeight = this.element.parentElement.offsetHeight;
+    
+    // Clear existing content but preserve structure
     this.element.innerHTML = '';
-    this.element.appendChild(frag);
-  }
+    this.chars = [];
+    this.transforms = [];
 
-  scatter(intensity = 1) {
-    if (!this.element || this.isScattered) return Promise.resolve();
-    this.isScattered = true;
+    const textParts = this.originalHTML.split('<br>');
 
-    return new Promise(resolve => {
-      let completed = 0;
-      const total = this.chars.length;
+    textParts.forEach((part, partIndex) => {
+      for (let i = 0; i < part.length; i++) {
+        const char = part[i];
+        const span = document.createElement('span');
+        span.className = 'char';
+        span.textContent = char === ' ' ? '\u00A0' : char;
+        this.chars.push(span);
+        this.element.appendChild(span);
 
-      this.chars.forEach((span, index) => {
-        const angle = Math.random() * Math.PI * 2;
-        const distance = (90 + Math.random() * 170) * intensity;
-        const x = Math.cos(angle) * distance;
-        const y = Math.sin(angle) * distance;
-        const rotation = (Math.random() - 0.5) * 360;
+        // Generate transforms based on current hero height
+        const maxScatter = Math.max(heroHeight * 0.8, 200); // minimum 200px to prevent issues
+        const y = -Math.random() * maxScatter;
+        const rotation = (Math.random() - 0.5) * 30;
         const scale = 0.6 + Math.random() * 0.7;
 
-        setTimeout(() => {
-          span.style.transform = `translate3d(${x}px, ${y}px, 0) rotate(${rotation}deg) scale(${scale})`;
-          span.style.opacity = '0.25';
+        this.transforms.push({ x: 0, y, rotation, scale });
+      }
 
-          completed++;
-          if (completed === total) resolve(); // ✅ resolve when last char scattered
-        }, index * 18);
-      });
+      if (partIndex < textParts.length - 1) {
+        this.element.appendChild(document.createElement('br'));
+      }
+    });
+
+    // Immediately apply current progress to prevent visual jumps
+    this.applyTransforms();
+  }
+
+  setTargetProgress(progress) {
+    this.targetProgress = Math.max(0, Math.min(1, progress));
+  }
+
+  applyTransforms() {
+    this.chars.forEach((span, i) => {
+      if (!this.transforms[i]) return; // Safety check
+      
+      const t = this.transforms[i];
+      const x = t.x * this.currentProgress;
+      const y = t.y * this.currentProgress;
+      const rot = t.rotation * this.currentProgress;
+      const scale = 1 + (t.scale - 1) * this.currentProgress;
+      
+      span.style.transform = `translate(${x}px, ${y}px) rotate(${rot}deg) scale(${scale})`;
+      span.style.opacity = 1;
     });
   }
 
-
-  gather() {
-    if (!this.element || !this.isScattered) return;
-    this.isScattered = false;
-    this.chars.forEach((span, index) => {
-      setTimeout(() => {
-        span.style.transform = 'translate3d(0,0,0) rotate(0deg) scale(1)';
-        span.style.opacity = '1';
-      }, index * 14);
-    });
-  }
-
-  toggle() {
-    if (this.isScattered) this.gather(); else this.scatter();
+  update() {
+    this.currentProgress += (this.targetProgress - this.currentProgress) * 0.15;
+    this.applyTransforms();
   }
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-  const cursor = document.querySelector('.cursor');
-  let mouseX = 0, mouseY = 0, cursorX = 0, cursorY = 0;
+  const titleElement = document.querySelector('.scatter-text');
+  if (!titleElement) return;
 
-  document.addEventListener('mousemove', e => {
-    mouseX = e.clientX; mouseY = e.clientY;
+  let scatterTitle = new ScatterText(titleElement);
+  let resizeTimeout;
+
+  function animate() {
+    scatterTitle.update();
+    requestAnimationFrame(animate);
+  }
+  animate();
+
+  function onScroll() {
+    const scrollY = window.pageYOffset || document.documentElement.scrollTop;
+    const heroHeight = scatterTitle.element.parentElement?.offsetHeight || window.innerHeight;
+    const progress = Math.min(scrollY / heroHeight, 1);
+    scatterTitle.setTargetProgress(progress);
+  }
+
+  window.addEventListener('scroll', onScroll, { passive: true });
+
+  // Improved resize handling with debouncing
+  window.addEventListener('resize', () => {
+    // Clear any existing timeout
+    clearTimeout(resizeTimeout);
+    
+    // Debounce resize to prevent excessive re-initialization
+    resizeTimeout = setTimeout(() => {
+      // Store current progress to maintain visual continuity
+      const currentProgress = scatterTitle.currentProgress;
+      
+      // Re-initialize with new dimensions
+      scatterTitle.init();
+      
+      // Restore progress to prevent visual jump
+      scatterTitle.currentProgress = currentProgress;
+      scatterTitle.targetProgress = currentProgress;
+      
+      // Recalculate scroll-based progress
+      onScroll();
+    }, 100); // 100ms debounce
   });
-  function animateCursor() {
-    cursorX += (mouseX - cursorX) * 0.15;
-    cursorY += (mouseY - cursorY) * 0.15;
-    if (cursor) cursor.style.transform = `translate(${cursorX - 12.5}px, ${cursorY - 12.5}px)`;
-    requestAnimationFrame(animateCursor);
-  }
-  animateCursor();
 
-  const titleEl = document.querySelector('.scatter-text');
-  const hero = document.querySelector('.hero');
-  let scatterTitle = null;
-  if (titleEl) {
-    scatterTitle = new ScatterText(titleEl);
-    titleEl.addEventListener('click', () => scatterTitle.toggle());
-    window.__scatter = scatterTitle;
-  }
+  // Initial scroll calculation
+  onScroll();
 
-  /* --- NEW: First scroll triggers scatter instead of page move --- */
-  let firstScrollDone = false;
+  // --- Custom cursor ---
+  const cursor = document.querySelector('.cursor');
+  if (cursor) {
+    let mouseX = 0, mouseY = 0, cursorX = 0, cursorY = 0;
+    
+    document.addEventListener('mousemove', e => { 
+      mouseX = e.clientX; 
+      mouseY = e.clientY; 
+    });
+    
+    function animateCursor() {
+      cursorX += (mouseX - cursorX) * 0.15;
+      cursorY += (mouseY - cursorY) * 0.15;
+      cursor.style.transform = `translate(${cursorX - 12.5}px, ${cursorY - 12.5}px)`;
+      requestAnimationFrame(animateCursor);
+    }
+    animateCursor();
 
-  function blockScrollAndScatter(e) {
-    if (firstScrollDone || !scatterTitle) return;
-    e.preventDefault(); // block actual scroll
-    firstScrollDone = true;
-
-    // scatter returns a promise → unlock only when finished
-    scatterTitle.scatter().then(() => {
-      document.body.classList.remove('scatter-locked');
+    document.addEventListener('mouseover', e => {
+      if (e.target.closest('a, button, [role="button"]')) {
+        cursor.style.transform = `translate(${cursorX - 20}px, ${cursorY - 20}px) scale(1.6)`;
+        cursor.style.background = '#ff6b6b';
+      }
+    });
+    
+    document.addEventListener('mouseout', e => {
+      if (e.target.closest('a, button, [role="button"]')) {
+        cursor.style.transform = `translate(${cursorX - 12.5}px, ${cursorY - 12.5}px) scale(1)`;
+        cursor.style.background = '#4285f4';
+      }
     });
   }
 
-
-  // lock initially
-  document.body.classList.add('scatter-locked');
-  // intercept wheel/touch scroll
-  window.addEventListener('wheel', blockScrollAndScatter, { passive: false });
-  window.addEventListener('touchmove', blockScrollAndScatter, { passive: false });
-
-  /* --- After unlocked: normal scatter/gather on scroll --- */
-  function checkScrollState() {
-    if (!scatterTitle || !hero) return;
-    const rect = hero.getBoundingClientRect();
-    const scrolledPast = rect.top < -8;
-    if (scrolledPast && !scatterTitle.isScattered) {
-      scatterTitle.scatter();
-    } else if (!scrolledPast && scatterTitle.isScattered && firstScrollDone) {
-      scatterTitle.gather();
-    }
-  }
-  window.addEventListener('scroll', () => requestAnimationFrame(checkScrollState), { passive: true });
-
-  /* --- Nav highlighting (unchanged) --- */
+  // --- Navigation highlighting ---
+  const navLinks = document.querySelectorAll('.site-nav a');
+  
   function updateActiveNav() {
     const sections = document.querySelectorAll('section[id]');
-    const navLinks = document.querySelectorAll('.site-nav a');
-    let currentSection = 'home';
+    let current = 'home';
+    
     sections.forEach(section => {
       const rect = section.getBoundingClientRect();
-      if (rect.top <= 100 && rect.bottom >= 100) currentSection = section.id;
+      if (rect.top <= 100 && rect.bottom >= 100) {
+        current = section.id;
+      }
     });
+    
     navLinks.forEach(link => {
-      link.classList.remove('active');
-      if (link.getAttribute('href') === `#${currentSection}`) link.classList.add('active');
+      const isActive = link.getAttribute('href') === `#${current}`;
+      link.classList.toggle('active', isActive);
     });
   }
+  
   window.addEventListener('scroll', updateActiveNav, { passive: true });
+  updateActiveNav();
 
-  /* --- Cursor hover effects --- */
-  document.addEventListener('mouseover', e => {
-    if (!cursor) return;
-    if (e.target.closest('a, button, [role="button"]')) {
-      cursor.style.transform = `translate(${cursorX - 20}px, ${cursorY - 20}px) scale(1.6)`;
-      cursor.style.background = '#ff6b6b';
+  document.addEventListener('click', e => {
+    const link = e.target.closest('.site-nav a[href^="#"]');
+    if (!link) return;
+    
+    e.preventDefault();
+    const targetId = link.getAttribute('href').slice(1);
+    const target = document.getElementById(targetId);
+    
+    if (target) {
+      target.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
   });
-  document.addEventListener('mouseout', e => {
-    if (!cursor) return;
-    if (e.target.closest('a, button, [role="button"]')) {
-      cursor.style.transform = `translate(${cursorX - 12.5}px, ${cursorY - 12.5}px) scale(1)`;
-      cursor.style.background = '#4285f4';
-    }
-  });
-  document.addEventListener('mouseenter', () => { if (cursor) cursor.style.opacity = '1'; });
-  document.addEventListener('mouseleave', () => { if (cursor) cursor.style.opacity = '0'; });
 });
