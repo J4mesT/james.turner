@@ -13,9 +13,10 @@
   <nav class="site-nav" aria-label="Primary">
     <div class="nav-container">
       <ul class="nav-links">
-        <li><a href="#home">Home</a></li>
+        <li><a href="#hero">Home</a></li> <!-- FIX: was #home -->
         <li><a href="#about">About</a></li>
-
+        <li><a href="#projects">Projects</a></li>
+        <li><a href="#contact">Contact</a></li> <!-- FIX: added contact link -->
       </ul>
       <div class="social-links">
         <a href="https://github.com/" target="_blank" aria-label="GitHub">
@@ -39,19 +40,31 @@
  
   <!-- Main content -->
   <div id="scroll-container">
-    <section id="home" class="hero">
+    <!-- HERO -->
+    <section id="hero" class="hero"> <!-- FIX: was id="home" -->
       <h1 class="scatter-text">
         <span class="intro-text">portfolio of</span><br>
         First Last
       </h1>
     </section>
+   
+    <!-- ABOUT -->
     <section id="about" class="about">
-      <h1 class="section-title">About Me</h1>
+      <h2 class="section-title">About Me</h2> <!-- FIX: h1 → h2 -->
       <p>Your custom about me content goes here. Write whatever you want about yourself, your skills, experience, etc.</p>
     </section>
-      <section id="about" class="about">
-      <h1 class="section-title">Projects</h1>
-      <p>Your custom about me content goes here. Write whatever you want about yourself, your skills, experience, etc.</p>
+   
+    <!-- PROJECTS -->
+    <section id="projects" class="projects">
+      <h2 class="section-title">Projects</h2> <!-- FIX: h1 → h2 -->
+      <p>Here you can showcase your work, projects, and portfolio pieces. Add descriptions, links, and images of your best work.</p>
+    </section>
+   
+    <!-- CONTACT -->
+    <section id="contact" class="contact"> <!-- FIX: added missing section -->
+      <h2 class="section-title">Contact</h2>
+      <p>Email: <a href="mailto:your@email.com">your@email.com</a></p>
+      <p>Or connect with me via the links above.</p>
     </section>
   </div>
   <script src="script.js"></script>
