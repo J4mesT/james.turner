@@ -27,15 +27,13 @@ html, body {
   line-height: 1.05;
   margin: 0 0 40px 0;
   text-align: center;
-  color: #1a1a1a; /* Deep black */
+  color: #1a1a1a;
   transition: color 0.8s ease;
-  /* Modern entrance animation - only for non-hero sections */
-  transform: translateY(60px) scale(0.9);
-  opacity: 0;
-  filter: blur(10px);
-  transition: all 1.2s cubic-bezier(0.16, 1, 0.3, 1);
-  will-change: transform, opacity, filter;
+  transform: none;   /* No intro shift */
+  opacity: 1;        /* Fully visible */
+  filter: none;      /* No blur */
 }
+
 
 /* Hero section titles should not have entrance animation */
 .hero .section-title,
@@ -45,13 +43,8 @@ html, body {
   filter: none !important;
 }
 
-/* Modern section title reveal - for all sections except hero */
-section.in-viewport .section-title {
-  transform: translateY(0) scale(1);
-  opacity: 1;
-  filter: blur(0px);
-  animation: modernTitleReveal 1.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-}
+
+
 
 /* Override for hero section - no modern animation, only scatter effect */
 .hero.in-viewport .section-title,
@@ -60,23 +53,7 @@ section.in-viewport .section-title {
 }
 
 /* Modern title reveal animation with subtle effects */
-@keyframes modernTitleReveal {
-  0% {
-    transform: translateY(60px) scale(0.9);
-    opacity: 0;
-    filter: blur(10px);
-  }
-  60% {
-    transform: translateY(-5px) scale(1.02);
-    opacity: 0.8;
-    filter: blur(2px);
-  }
-  100% {
-    transform: translateY(0) scale(1);
-    opacity: 1;
-    filter: blur(0px);
-  }
-}
+
 
 /* Add subtle glow effect on section titles - for all sections except hero */
 section.in-viewport .section-title:not(.hero .section-title) {
@@ -472,13 +449,7 @@ section.in-viewport + section::after {
   transform: scaleX(1);
 }
 
-/* Enhanced section content animations */
-section .section-title {
-  transform: translateY(60px) scale(0.9);
-  opacity: 0;
-  filter: blur(10px);
-  transition: all 1.2s cubic-bezier(0.16, 1, 0.3, 1);
-}
+
 
 /* Hero section titles should not have entrance animation (they use scatter effect) */
 .hero .section-title,
@@ -535,12 +506,12 @@ section:not(.in-viewport) .scatter-text .char {
 
 /* Staggered content reveals with modern animation */
 section p, section .content {
-  transform: translateY(40px) scale(0.95);
-  opacity: 0;
-  filter: blur(8px);
-  transition: all 1.4s cubic-bezier(0.16, 1, 0.3, 1);
-  transition-delay: 0.3s;
+  transform: none;   /* No shift */
+  opacity: 1;        /* Always visible */
+  filter: none;      /* No blur */
+  transition: none;  /* No animation */
 }
+
 
 section.in-viewport p,
 section.in-viewport .content {

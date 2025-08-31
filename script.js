@@ -48,7 +48,6 @@ class ScatterText {
             this.chars.push(span);
             container.appendChild(span);
             
-            // Changed scatter direction to right instead of up
             const maxScatter = Math.max(window.innerWidth * 0.8, 300);
             const x = Math.random() * maxScatter; // Scatter to the right
             const y = (Math.random() - 0.5) * 100; // Small vertical variation
@@ -83,12 +82,9 @@ class ScatterText {
     this.navChars = [];
     this.navCharTransforms = [];
     
-    // Use hardcoded "First" and "Last" instead of extracting from original HTML
     const abbreviatedText = 'First\nLast';
     
-    // Process the abbreviated text into character spans
     let isSecondLine = false;
-    let charIndex = 0;
     let isFirstCharOfSecondLine = true;
     
     for (let i = 0; i < abbreviatedText.length; i++) {
@@ -110,7 +106,6 @@ class ScatterText {
         span.style.display = 'inline-block';
         span.style.willChange = 'transform, opacity';
         
-        // Add slight right offset only for the first character of second line
         if (isSecondLine && isFirstCharOfSecondLine) {
           span.style.marginLeft = '8px';
           isFirstCharOfSecondLine = false;
@@ -118,38 +113,26 @@ class ScatterText {
         
         this.navChars.push(span);
         
-        // Generate scattered transform values - all from left side
-        const scatterX = -200 - (Math.random() * 300); // Always from left side (-200 to -500px)
-        const scatterY = (Math.random() - 0.5) * 150; // Vertical variation
-        const scatterRotation = (Math.random() - 0.5) * 60; // More rotation variation
+        const scatterX = -200 - (Math.random() * 300);
+        const scatterY = (Math.random() - 0.5) * 150;
+        const scatterRotation = (Math.random() - 0.5) * 60;
         
-        // Store the transform values
-        this.navCharTransforms.push({
-          x: scatterX,
-          y: scatterY,
-          rotation: scatterRotation
-        });
-        
-        // Apply initial scattered position immediately
+        this.navCharTransforms.push({ x: scatterX, y: scatterY, rotation: scatterRotation });
         span.style.transform = `translate(${scatterX}px, ${scatterY}px) rotate(${scatterRotation}deg)`;
         span.style.opacity = '0';
         
         this.navButton.appendChild(span);
-        charIndex++;
       }
     }
     
-    // Set initial state - start scattered (invisible) to match main title behavior
-    this.navCurrentProgress = 1; // Start scattered (invisible)
-    this.navTargetProgress = 1; // Stay scattered initially
+    this.navCurrentProgress = 1;
+    this.navTargetProgress = 1;
     this.isNavButtonVisible = false;
     
-    // Apply initial state
     this.applyNavTransforms();
-    this.navButton.style.opacity = '1'; // Keep container visible for animation
-    this.navButton.style.pointerEvents = 'none'; // But not interactive initially
+    this.navButton.style.opacity = '1';
+    this.navButton.style.pointerEvents = 'none';
     
-    // Make the button clickable
     this.navButton.addEventListener('click', (e) => {
       e.preventDefault();
       const target = document.getElementById('home') || document.querySelector('.hero');
@@ -158,7 +141,6 @@ class ScatterText {
       }
     });
     
-    // Insert before existing navigation or at the beginning of body
     const existingNav = document.querySelector('.site-nav');
     if (existingNav && existingNav.parentNode) {
       existingNav.parentNode.insertBefore(this.navButton, existingNav);
@@ -175,13 +157,9 @@ class ScatterText {
       const y = t.y * this.navCurrentProgress;
       const rot = t.rotation * this.navCurrentProgress;
       span.style.transform = `translate(${x}px, ${y}px) rotate(${rot}deg)`;
-      
-      // When scattered (progress = 1), opacity should be 0 (invisible)
-      // When gathered (progress = 0), opacity should be 1 (visible)
       const opacity = 1 - this.navCurrentProgress;
       span.style.opacity = opacity.toString();
       
-      // Add/remove CSS classes for debugging
       if (opacity > 0.5) {
         span.classList.add('gathering');
         span.classList.remove('scattering');
@@ -194,25 +172,23 @@ class ScatterText {
   
   showNavButton() {
     this.isNavButtonVisible = true;
-    this.navTargetProgress = 0; // Gather characters to center (make visible)
+    this.navTargetProgress = 0;
   }
   
   hideNavButton() {
     this.isNavButtonVisible = false;
-    this.navTargetProgress = 1; // Scatter characters away (make invisible)
+    this.navTargetProgress = 1;
   }
   
   updateNavAnimation() {
-    // Very fast animation for instant response
-    const animationSpeed = 0.4; // Much faster for instant feel
+    const animationSpeed = 0.4;
     this.navCurrentProgress += (this.navTargetProgress - this.navCurrentProgress) * animationSpeed;
     
     this.applyNavTransforms();
     
-    // Update pointer events based on visibility
     const maxCharOpacity = Math.max(...this.navChars.map(span => parseFloat(span.style.opacity) || 0));
     
-    if (maxCharOpacity > 0.1) { // Lower threshold for interactivity
+    if (maxCharOpacity > 0.1) {
       this.navButton.style.pointerEvents = 'auto';
       this.navButton.classList.add('visible');
     } else {
@@ -224,11 +200,9 @@ class ScatterText {
   setTargetProgress(progress) {
     this.targetProgress = Math.max(0, Math.min(1, progress));
     
-    // Only apply nav button logic to the main hero title (not section titles)
     const isMainTitle = this.element.closest('.hero');
     if (isMainTitle) {
-      // Show nav button immediately when main title starts to scatter
-      if (this.targetProgress > 0.05) { // Much lower threshold for instant response
+      if (this.targetProgress > 0.05) {
         this.showNavButton();
       } else {
         this.hideNavButton();
@@ -245,15 +219,13 @@ class ScatterText {
       const rot = t.rotation * this.currentProgress;
       const scale = 1 + (t.scale - 1) * this.currentProgress;
       span.style.transform = `translate(${x}px, ${y}px) rotate(${rot}deg) scale(${scale})`;
-      span.style.opacity = 1; // Keep opacity at 1 - no fading
+      span.style.opacity = 1;
     });
   }
   
   update() {
     this.currentProgress += (this.targetProgress - this.currentProgress) * 0.15;
     this.applyTransforms();
-    
-    // Update nav button animation
     this.updateNavAnimation();
   }
 }
@@ -343,9 +315,7 @@ class PhysicsCursor {
   }
 }
 
-// Color interpolation utility
 function interpolateColor(color1, color2, factor) {
-  // Convert hex to RGB
   const hex2rgb = (hex) => {
     const r = parseInt(hex.slice(1, 3), 16);
     const g = parseInt(hex.slice(3, 5), 16);
@@ -353,7 +323,6 @@ function interpolateColor(color1, color2, factor) {
     return [r, g, b];
   };
   
-  // Convert RGB to hex
   const rgb2hex = (r, g, b) => {
     return `#${Math.round(r).toString(16).padStart(2, '0')}${Math.round(g).toString(16).padStart(2, '0')}${Math.round(b).toString(16).padStart(2, '0')}`;
   };
@@ -368,25 +337,22 @@ function interpolateColor(color1, color2, factor) {
   return rgb2hex(r, g, b);
 }
 
-// Enhanced background morphing function with smooth color transitions
 function updateSectionBackgrounds() {
   const sections = document.querySelectorAll('section[id]');
   const sectionsArray = Array.from(sections);
   const windowHeight = window.innerHeight;
   const scrollY = window.pageYOffset || document.documentElement.scrollTop;
   
-  // Define section colors with more apparent differences
   const sectionColors = {
-    hero: '#faf9f6',     // Light cream
-    home: '#faf9f6',     // Same as hero
-    about: '#e8e0d6',    // Warm beige
-    projects: '#d4c4b0', // Light brown
-    contact: '#c0a990'   // Medium brown
+    hero: '#faf9f6',
+    home: '#faf9f6',
+    about: '#e8e0d6',
+    projects: '#d4c4b0',
+    contact: '#c0a990'
   };
   
   let activeSection = 'hero';
   
-  // Find the active section first
   sections.forEach(section => {
     const rect = section.getBoundingClientRect();
     if (rect.top <= windowHeight / 3 && rect.bottom >= windowHeight / 3) {
@@ -394,15 +360,13 @@ function updateSectionBackgrounds() {
     }
   });
   
-  // Prepare tops and colors list
   const tops = sectionsArray.map(s => s.offsetTop);
-  tops.push(document.documentElement.scrollHeight); // For the end of the page
+  tops.push(document.documentElement.scrollHeight);
   const colorsList = sectionsArray.map(s => sectionColors[s.id] || sectionColors.hero);
-  colorsList.push(colorsList[colorsList.length - 1]); // Last color extends to the end
+  colorsList.push(colorsList[colorsList.length - 1]);
   
   let currentColor = colorsList[0];
   
-  // Find the current segment and interpolate
   for (let i = 0; i < sectionsArray.length; i++) {
     if (scrollY >= tops[i] && scrollY < tops[i + 1]) {
       const progress = (scrollY - tops[i]) / (tops[i + 1] - tops[i]);
@@ -411,13 +375,9 @@ function updateSectionBackgrounds() {
     }
   }
   
-  // Apply the calculated color
   document.body.style.backgroundColor = currentColor;
   
-  // Remove all active classes
   document.body.classList.remove('hero-active', 'home-active', 'about-active', 'projects-active', 'contact-active');
-  
-  // Add the current active class
   document.body.classList.add(`${activeSection}-active`);
 }
 
@@ -427,7 +387,6 @@ document.addEventListener('DOMContentLoaded', () => {
   
   let scatterTexts = [];
   titleElements.forEach(element => {
-    // Only apply scatter effect to hero section
     const isHeroTitle = element.closest('.hero');
     if (isHeroTitle) {
       scatterTexts.push(new ScatterText(element));
@@ -446,21 +405,17 @@ document.addEventListener('DOMContentLoaded', () => {
     const scrollY = window.pageYOffset || document.documentElement.scrollTop;
     const windowHeight = window.innerHeight;
     
-    // Update smooth background morphing
     updateSectionBackgrounds();
     
-    // Update all sections' viewport and active status
     const sections = document.querySelectorAll('section');
     sections.forEach(section => {
       const sectionTop = section.offsetTop;
       const sectionHeight = section.offsetHeight;
       const sectionBottom = sectionTop + sectionHeight;
       
-      // Check if section is in viewport
       const isInViewport = sectionBottom > scrollY && sectionTop < scrollY + windowHeight;
       section.classList.toggle('in-viewport', isInViewport);
       
-      // Add active class for the section that's most centered
       const sectionCenter = sectionTop + (sectionHeight / 2);
       const windowCenter = scrollY + (windowHeight / 2);
       const distanceFromCenter = Math.abs(windowCenter - sectionCenter);
@@ -472,7 +427,6 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     });
     
-    // Update scatter text effects (only for hero)
     scatterTexts.forEach(scatterText => {
       const section = scatterText.element.closest('section');
       if (!section) return;
@@ -486,23 +440,16 @@ document.addEventListener('DOMContentLoaded', () => {
       if (isInViewport) {
         const sectionCenter = sectionTop + (sectionHeight / 2);
         const windowCenter = scrollY + (windowHeight / 2);
-        
-        // Calculate distance from section center
         const distance = Math.abs(windowCenter - sectionCenter);
         const maxDistance = sectionHeight;
-        
-        // Progress is 0 when centered on section, 1 when far away
         const progress = Math.min(distance / maxDistance, 1);
-        
         scatterText.setTargetProgress(progress);
       } else {
-        // Hide scattered characters when section is out of viewport
         scatterText.setTargetProgress(1);
       }
     });
   }
   
-  // Keep original scroll event handling to preserve text animations
   window.addEventListener('scroll', onScroll, { passive: true });
   
   window.addEventListener('resize', () => {
@@ -521,7 +468,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }, 100);
   });
   
-  // Initialize scroll state
   onScroll();
   
   const cursor = document.querySelector('.cursor');
@@ -559,6 +505,10 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
   
-  // Initialize background state
-  updateSectionBackgrounds();
+  // Frame-based smooth background animation
+  function animateBackground() {
+    updateSectionBackgrounds();
+    requestAnimationFrame(animateBackground);
+  }
+  animateBackground();
 });
