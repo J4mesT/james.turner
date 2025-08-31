@@ -5,8 +5,8 @@ html, body {
   font-family: 'Playfair Display', serif;
   width: 100%;
   scroll-behavior: smooth;
-  background: #fafafa;
-  color: #222;
+  background: #faf9f6; /* Light cream background */
+  color: #1a1a1a; /* Deep black text */
   cursor: none; /* Hide default cursor */
 }
 *, *::before, *::after {
@@ -22,7 +22,7 @@ html, body {
   line-height: 1.05;
   margin: 0 0 40px 0;
   text-align: center;
-  color: #222;
+  color: #1a1a1a; /* Deep black */
 }
 /* Sections */
 section {
@@ -34,11 +34,11 @@ section {
   align-items: center;
   text-align: center;
 }
-.about { background: #f5f5f5; }
-.projects { background: #f5f5f5; }
-.contact { background: #f5f5f5; }
+.about { background: #f5f2ed; /* Slightly darker cream */ }
+.projects { background: #f5f2ed; /* Slightly darker cream */ }
+.contact { background: #f5f2ed; /* Slightly darker cream */ }
 .hero {
-  background: #f5f5f5;
+  background: #f5f2ed; /* Slightly darker cream */
   position: relative; /* needed for absolute child positioning */
 }
 .hero h1 {
@@ -54,7 +54,7 @@ section {
 /* First line smaller and grey */
 .intro-text {
   font-size: 0.6em;
-  color: #888;
+  color: #666; /* Medium grey for intro text */
   display: inline-block;
 }
 .scatter-text .char {
@@ -95,27 +95,72 @@ section {
 .nav-links a {
   text-decoration: none;
   font-weight: 600;
-  color: #222;
+  color: #1a1a1a; /* Deep black text */
   font-size: 16px;
   display: inline-block;
   padding: 10px 20px;
   border-radius: 25px;
   transition: all 0.3s ease;
-  background: rgba(255, 255, 255, 0.15);
+  background: rgba(250, 249, 246, 0.85); /* Cream with transparency */
   backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.25);
+  border: 1px solid rgba(26, 26, 26, 0.15); /* Subtle black border */
 }
 .nav-links a:hover {
   transform: translateY(-4px) scale(1.07);
-  background: #4285f4;
-  color: #fff;
-  box-shadow: 0 12px 30px rgba(66, 133, 244, 0.3),
-              0 0 10px rgba(66, 133, 244, 0.5);
+  background: #1a1a1a; /* Black background on hover */
+  color: #faf9f6; /* Cream text on hover */
+  box-shadow: 0 12px 30px rgba(26, 26, 26, 0.3),
+              0 0 10px rgba(26, 26, 26, 0.5);
 }
 .nav-links a.active {
-  color: #fff;
-  background: #4285f4;
-  box-shadow: 0 6px 20px rgba(66, 133, 244, 0.25);
+  color: #faf9f6; /* Cream text when active */
+  background: #1a1a1a; /* Black background when active */
+  box-shadow: 0 6px 20px rgba(26, 26, 26, 0.25);
+}
+
+/* Title Navigation Text */
+.nav-title-button {
+  position: fixed !important;
+  top: 34px !important;
+  left: 60px !important;
+  z-index: 1001 !important;
+  font-family: 'Playfair Display', serif !important;
+  font-size: 14px !important;
+  font-weight: 700 !important;
+  color: #1a1a1a !important; /* Deep black */
+  text-decoration: none !important;
+  opacity: 0 !important;
+  pointer-events: auto !important;
+  display: inline-block !important;
+  white-space: nowrap !important;
+  line-height: 1.2 !important;
+  transition: color 0.3s ease !important;
+}
+
+/* Individual character styling for nav text */
+.nav-title-button .nav-char {
+  display: inline-block !important;
+  will-change: transform, opacity !important;
+}
+
+/* When visible */
+.nav-title-button.visible {
+  opacity: 1 !important;
+  pointer-events: auto !important;
+}
+
+/* Hover states for title text */
+.nav-title-button:hover {
+  color: #444 !important; /* Slightly lighter black on hover */
+}
+
+.nav-title-button:hover .nav-char {
+  color: #444 !important; /* Slightly lighter black on hover */
+}
+
+/* Adjust nav container to accommodate title text */
+.nav-container {
+  padding: 0 60px 0 150px; /* Reduced left padding since no button styling */
 }
 
 /* Social Links */
@@ -130,10 +175,10 @@ section {
   width: 45px;
   height: 45px;
   border-radius: 50%;
-  background: rgba(255, 255, 255, 0.15);
+  background: rgba(250, 249, 246, 0.85); /* Cream with transparency */
   backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.25);
-  color: #222;
+  border: 1px solid rgba(26, 26, 26, 0.15); /* Subtle black border */
+  color: #1a1a1a; /* Deep black */
   font-size: 18px;
   display: flex;
   align-items: center;
@@ -143,10 +188,10 @@ section {
 }
 .social-links a:hover {
   transform: translateY(-4px) scale(1.15);
-  background: #4285f4;
-  color: #fff;
-  box-shadow: 0 12px 30px rgba(66, 133, 244, 0.3),
-              0 0 10px rgba(66, 133, 244, 0.5);
+  background: #1a1a1a; /* Black background on hover */
+  color: #faf9f6; /* Cream text on hover */
+  box-shadow: 0 12px 30px rgba(26, 26, 26, 0.3),
+              0 0 10px rgba(26, 26, 26, 0.5);
 }
 
 /* Magnetic effect for nav links */
@@ -161,7 +206,7 @@ section {
   left: 50%;
   width: 0;
   height: 0;
-  background: radial-gradient(circle, rgba(66, 133, 244, 0.3) 0%, transparent 70%);
+  background: radial-gradient(circle, rgba(26, 26, 26, 0.2) 0%, transparent 70%); /* Black glow effect */
   transition: all 0.3s ease;
   border-radius: 50%;
   transform: translate(-50%, -50%);
@@ -180,12 +225,12 @@ section {
   width: 25px;
   height: 25px;
   border-radius: 50%;
-  background: radial-gradient(circle, #228B22 0%, #006400 100%);
+  background: radial-gradient(circle, #1a1a1a 0%, #333 100%); /* Black cursor */
   pointer-events: none;
   z-index: 10000;
   opacity: 0.9;
   transition: background 0.3s ease;
-  box-shadow: 0 0 20px rgba(34, 139, 34, 0.6);
+  box-shadow: 0 0 20px rgba(26, 26, 26, 0.4); /* Black shadow */
 }
 
 /* Responsive adjustments */
@@ -193,8 +238,21 @@ section {
   .nav-container {
     flex-direction: column;
     gap: 20px;
-    padding: 0 30px;
+    padding: 0 30px; /* Remove extra left padding on mobile */
   }
+  
+  /* Adjust title text position for mobile */
+  .nav-title-button {
+    top: 25px !important;
+    left: 30px !important;
+    font-size: 12px !important;
+  }
+  
+  /* Adjust nav container to not overlap with title text on mobile */
+  .nav-container {
+    padding: 0 30px 0 100px;
+  }
+  
   .nav-links {
     gap: 20px;
   }
@@ -217,4 +275,9 @@ section {
     left: -100px;
     bottom: 150px;
   }
+}
+
+section:not(.in-viewport) .scatter-text .char {
+  opacity: 0 !important;
+  pointer-events: none;
 }
