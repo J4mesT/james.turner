@@ -12,8 +12,8 @@ class ScatterText {
     this.navChars = [];
     this.navCharTransforms = [];
     this.isNavButtonVisible = false;
-    this.navCurrentProgress = 1; // Start scattered (invisible)
-    this.navTargetProgress = 1; // Start scattered (invisible)
+    this.navCurrentProgress = 1;
+    this.navTargetProgress = 1;
     this.init();
   }
   
@@ -26,7 +26,6 @@ class ScatterText {
     this.chars = [];
     this.transforms = [];
     
-    // Create navigation button if it doesn't exist
     if (!this.navButton) {
       this.createNavButton();
     }
@@ -49,8 +48,8 @@ class ScatterText {
             container.appendChild(span);
             
             const maxScatter = Math.max(window.innerWidth * 0.8, 300);
-            const x = Math.random() * maxScatter; // Scatter to the right
-            const y = (Math.random() - 0.5) * 100; // Small vertical variation
+            const x = Math.random() * maxScatter;
+            const y = (Math.random() - 0.5) * 100;
             const rotation = (Math.random() - 0.5) * 45;
             const scale = 1;
             this.transforms.push({ x, y, rotation, scale });
@@ -82,7 +81,7 @@ class ScatterText {
     this.navChars = [];
     this.navCharTransforms = [];
     
-    const abbreviatedText = 'First\nLast';
+    const abbreviatedText = 'James\nTurner';
     
     let isSecondLine = false;
     let isFirstCharOfSecondLine = true;
@@ -315,6 +314,237 @@ class PhysicsCursor {
   }
 }
 
+// Enhanced Background System
+class EnhancedBackgroundSystem {
+  constructor() {
+    this.particles = [];
+    this.cursorTrails = [];
+    this.lastMouseX = 0;
+    this.lastMouseY = 0;
+    this.init();
+  }
+
+  init() {
+    this.createBackgroundElements();
+    this.createParticleSystem();
+    this.createLightBeams();
+    this.createCursorTrails();
+    this.bindEvents();
+    this.animate();
+  }
+
+  createBackgroundElements() {
+    const shapesContainer = document.createElement('div');
+    shapesContainer.className = 'bg-shapes';
+    
+    for (let i = 0; i < 4; i++) {
+      const shape = document.createElement('div');
+      shape.className = 'bg-shape';
+      shapesContainer.appendChild(shape);
+    }
+    
+    document.body.appendChild(shapesContainer);
+
+    const noiseOverlay = document.createElement('div');
+    noiseOverlay.className = 'noise-overlay';
+    document.body.appendChild(noiseOverlay);
+  }
+
+  createParticleSystem() {
+    const particlesContainer = document.createElement('div');
+    particlesContainer.className = 'bg-particles';
+    
+    for (let i = 0; i < 15; i++) {
+      setTimeout(() => {
+        this.createParticle(particlesContainer);
+      }, i * 1000);
+    }
+    
+    document.body.appendChild(particlesContainer);
+    
+    setInterval(() => {
+      this.createParticle(particlesContainer);
+    }, 2000);
+  }
+
+  createParticle(container) {
+    const particle = document.createElement('div');
+    particle.className = 'particle';
+    
+    particle.style.left = Math.random() * window.innerWidth + 'px';
+    particle.style.top = window.innerHeight + 'px';
+    
+    const duration = 15 + Math.random() * 10;
+    const delay = Math.random() * 2;
+    
+    particle.style.animationDuration = duration + 's';
+    particle.style.animationDelay = delay + 's';
+    
+    container.appendChild(particle);
+    
+    setTimeout(() => {
+      if (particle.parentNode) {
+        particle.parentNode.removeChild(particle);
+      }
+    }, (duration + delay) * 1000);
+  }
+
+  createLightBeams() {
+    const beamsContainer = document.createElement('div');
+    beamsContainer.className = 'light-beams';
+    
+    for (let i = 0; i < 3; i++) {
+      const beam = document.createElement('div');
+      beam.className = 'light-beam';
+      beamsContainer.appendChild(beam);
+    }
+    
+    document.body.appendChild(beamsContainer);
+  }
+
+  createCursorTrails() {
+    for (let i = 0; i < 8; i++) {
+      const trail = document.createElement('div');
+      trail.className = 'cursor-trail';
+      trail.style.zIndex = 5000 - i; // Lower z-index to avoid conflicts
+      document.body.appendChild(trail);
+      this.cursorTrails.push({
+        element: trail,
+        x: 0,
+        y: 0,
+        opacity: 1 - (i * 0.15)
+      });
+    }
+  }
+
+  updateCursorTrails(mouseX, mouseY) {
+    this.cursorTrails.forEach((trail, index) => {
+      const delay = index * 0.1;
+      const targetX = mouseX - (index * 2);
+      const targetY = mouseY - (index * 2);
+      
+      trail.x += (targetX - trail.x) * (0.3 - delay);
+      trail.y += (targetY - trail.y) * (0.3 - delay);
+      
+      trail.element.style.transform = `translate(${trail.x - 3}px, ${trail.y - 3}px)`;
+      trail.element.style.opacity = trail.opacity;
+    });
+  }
+
+  bindEvents() {
+    let isMouseMoving = false;
+    let mouseTimeout;
+
+    document.addEventListener('mousemove', (e) => {
+      this.lastMouseX = e.clientX;
+      this.lastMouseY = e.clientY;
+      
+      if (!isMouseMoving) {
+        isMouseMoving = true;
+        this.cursorTrails.forEach(trail => {
+          trail.element.style.opacity = trail.opacity;
+        });
+      }
+
+      clearTimeout(mouseTimeout);
+      mouseTimeout = setTimeout(() => {
+        isMouseMoving = false;
+        this.cursorTrails.forEach(trail => {
+          trail.element.style.opacity = '0';
+        });
+      }, 100);
+    });
+
+    window.addEventListener('scroll', () => {
+      this.updateBackgroundIntensity();
+    }, { passive: true });
+
+    window.addEventListener('resize', () => {
+      this.handleResize();
+    });
+  }
+
+  updateBackgroundIntensity() {
+    const scrollY = window.pageYOffset;
+    const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
+    const scrollProgress = Math.min(scrollY / maxScroll, 1);
+    
+    const shapesContainer = document.querySelector('.bg-shapes');
+    const noiseOverlay = document.querySelector('.noise-overlay');
+    
+    if (shapesContainer) {
+      shapesContainer.style.opacity = 1 - (scrollProgress * 0.3);
+    }
+    
+    if (noiseOverlay) {
+      noiseOverlay.style.opacity = 0.03 + (scrollProgress * 0.02);
+    }
+  }
+
+  handleResize() {
+    const particles = document.querySelectorAll('.particle');
+    particles.forEach(particle => {
+      if (parseFloat(particle.style.left) > window.innerWidth) {
+        particle.style.left = Math.random() * window.innerWidth + 'px';
+      }
+    });
+  }
+
+  animate() {
+    this.updateCursorTrails(this.lastMouseX, this.lastMouseY);
+    requestAnimationFrame(() => this.animate());
+  }
+}
+
+// Performance monitor
+class BackgroundPerformanceMonitor {
+  constructor() {
+    this.frameCount = 0;
+    this.lastTime = performance.now();
+    this.fps = 60;
+    this.init();
+  }
+
+  init() {
+    this.monitor();
+  }
+
+  monitor() {
+    this.frameCount++;
+    const currentTime = performance.now();
+    
+    if (currentTime - this.lastTime >= 1000) {
+      this.fps = this.frameCount;
+      this.frameCount = 0;
+      this.lastTime = currentTime;
+      
+      if (this.fps < 30) {
+        document.body.classList.add('low-performance');
+        this.reduceEffects();
+      } else {
+        document.body.classList.remove('low-performance');
+      }
+    }
+    
+    requestAnimationFrame(() => this.monitor());
+  }
+
+  reduceEffects() {
+    const particles = document.querySelectorAll('.particle');
+    particles.forEach((particle, index) => {
+      if (index % 2 === 0) {
+        particle.style.display = 'none';
+      }
+    });
+    
+    const shapes = document.querySelectorAll('.bg-shape');
+    shapes.forEach(shape => {
+      shape.style.animationDuration = '60s';
+    });
+  }
+}
+
+// Enhanced color interpolation function
 function interpolateColor(color1, color2, factor) {
   const hex2rgb = (hex) => {
     const r = parseInt(hex.slice(1, 3), 16);
@@ -330,13 +560,16 @@ function interpolateColor(color1, color2, factor) {
   const [r1, g1, b1] = hex2rgb(color1);
   const [r2, g2, b2] = hex2rgb(color2);
   
-  const r = r1 + factor * (r2 - r1);
-  const g = g1 + factor * (g2 - g1);
-  const b = b1 + factor * (b2 - b1);
+  const smoothFactor = factor * factor * (3 - 2 * factor);
+  
+  const r = r1 + smoothFactor * (r2 - r1);
+  const g = g1 + smoothFactor * (g2 - g1);
+  const b = b1 + smoothFactor * (b2 - b1);
   
   return rgb2hex(r, g, b);
 }
 
+// Enhanced section background updates (consolidated function)
 function updateSectionBackgrounds() {
   const sections = document.querySelectorAll('section[id]');
   const sectionsArray = Array.from(sections);
@@ -355,8 +588,18 @@ function updateSectionBackgrounds() {
   
   sections.forEach(section => {
     const rect = section.getBoundingClientRect();
-    if (rect.top <= windowHeight / 3 && rect.bottom >= windowHeight / 3) {
+    const sectionCenter = rect.top + rect.height / 2;
+    const windowCenter = windowHeight / 2;
+    const distance = Math.abs(sectionCenter - windowCenter);
+    
+    if (distance < windowHeight / 3) {
       activeSection = section.id;
+      section.classList.add('active');
+      
+      const intensity = 1 - (distance / (windowHeight / 3));
+      section.style.setProperty('--glow-intensity', intensity);
+    } else {
+      section.classList.remove('active');
     }
   });
   
@@ -376,16 +619,16 @@ function updateSectionBackgrounds() {
   }
   
   document.body.style.backgroundColor = currentColor;
-  
   document.body.classList.remove('hero-active', 'home-active', 'about-active', 'projects-active', 'contact-active');
   document.body.classList.add(`${activeSection}-active`);
 }
 
+// Main initialization (consolidated)
 document.addEventListener('DOMContentLoaded', () => {
+  // Initialize scatter text system
   const titleElements = document.querySelectorAll('.scatter-text');
-  if (!titleElements.length) return;
-  
   let scatterTexts = [];
+  
   titleElements.forEach(element => {
     const isHeroTitle = element.closest('.hero');
     if (isHeroTitle) {
@@ -393,14 +636,18 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
   
-  let resizeTimeout;
+  // Initialize enhanced background system
+  const backgroundSystem = new EnhancedBackgroundSystem();
+  const performanceMonitor = new BackgroundPerformanceMonitor();
   
+  // Animation loop for scatter text
   function animate() {
     scatterTexts.forEach(scatter => scatter.update());
     requestAnimationFrame(animate);
   }
   animate();
   
+  // Scroll handler
   function onScroll() {
     const scrollY = window.pageYOffset || document.documentElement.scrollTop;
     const windowHeight = window.innerHeight;
@@ -452,6 +699,8 @@ document.addEventListener('DOMContentLoaded', () => {
   
   window.addEventListener('scroll', onScroll, { passive: true });
   
+  // Resize handler
+  let resizeTimeout;
   window.addEventListener('resize', () => {
     clearTimeout(resizeTimeout);
     resizeTimeout = setTimeout(() => {
@@ -468,13 +717,13 @@ document.addEventListener('DOMContentLoaded', () => {
     }, 100);
   });
   
-  onScroll();
-  
+  // Initialize cursor
   const cursor = document.querySelector('.cursor');
   if (cursor) {
     new PhysicsCursor(cursor);
   }
   
+  // Navigation active state
   const navLinks = document.querySelectorAll('.site-nav a');
   function updateActiveNav() {
     const sections = document.querySelectorAll('section[id]');
@@ -494,6 +743,7 @@ document.addEventListener('DOMContentLoaded', () => {
   window.addEventListener('scroll', updateActiveNav, { passive: true });
   updateActiveNav();
   
+  // Click handler for smooth scrolling
   document.addEventListener('click', e => {
     const link = e.target.closest('.site-nav a[href^="#"], .nav-title-button');
     if (!link) return;
@@ -505,10 +755,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
   
-  // Frame-based smooth background animation
-  function animateBackground() {
-    updateSectionBackgrounds();
-    requestAnimationFrame(animateBackground);
-  }
-  animateBackground();
+  // Initial call
+  onScroll();
 });

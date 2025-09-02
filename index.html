@@ -13,22 +13,19 @@
   <nav class="site-nav" aria-label="Primary">
     <div class="nav-container">
       <ul class="nav-links">
-        <li><a href="#hero">Home</a></li> <!-- FIX: was #home -->
+        <li><a href="#hero">Home</a></li>
         <li><a href="#about">About</a></li>
         <li><a href="#projects">Projects</a></li>
-        <li><a href="#contact">Contact</a></li> <!-- FIX: added contact link -->
+        <li><a href="#contact">Contact</a></li>
       </ul>
       <div class="social-links">
-        <a href="https://github.com/" target="_blank" aria-label="GitHub">
+        <a href="https://github.com/J4mesT" target="_blank" aria-label="GitHub">
           <i class="fab fa-github"></i>
         </a>
-        <a href="https://linkedin.com/" target="_blank" aria-label="LinkedIn">
+        <a href="https://www.linkedin.com/in/jamesturneruk/" target="_blank" aria-label="LinkedIn">
           <i class="fab fa-linkedin"></i>
         </a>
-        <a href="https://twitter.com/" target="_blank" aria-label="Twitter">
-          <i class="fab fa-twitter"></i>
-        </a>
-        <a href="mailto:your@email.com" aria-label="Email">
+        <a href="james.turner987@outlook.com" aria-label="Email">
           <i class="fas fa-envelope"></i>
         </a>
       </div>
@@ -41,30 +38,138 @@
   <!-- Main content -->
   <div id="scroll-container">
     <!-- HERO -->
-    <section id="hero" class="hero"> <!-- FIX: was id="home" -->
+    <section id="hero" class="hero">
       <h1 class="scatter-text">
         <span class="intro-text">portfolio of</span><br>
-        First Last
+        James Turner
       </h1>
     </section>
    
     <!-- ABOUT -->
     <section id="about" class="about">
-      <h2 class="section-title">About Me</h2> <!-- FIX: h1 → h2 -->
-      <p>Your custom about me content goes here. Write whatever you want about yourself, your skills, experience, etc.</p>
+      <h2 class="section-title">About Me</h2>
+      <div class="about-content">
+        <div class="about-text">
+          <p>Welcome to my digital space! I'm a passionate developer with a love for creating meaningful digital experiences. My journey in tech began several years ago, and since then, I've been dedicated to crafting solutions that make a difference.</p>
+          
+          <h3>What I Do</h3>
+          <p>I specialize in full-stack development, with expertise in modern web technologies. Whether it's building responsive front-end interfaces or architecting robust back-end systems, I approach each project with creativity and precision.</p>
+          
+          <h3>My Philosophy</h3>
+          <p>I believe in writing clean, maintainable code and creating user experiences that are both beautiful and functional. Continuous learning is at the heart of everything I do – the tech world evolves rapidly, and I love staying at the forefront of innovation.</p>
+          
+          <div class="skills-container">
+            <h3>Skills & Technologies</h3>
+            <div class="skills-list">
+              <span class="skill-tag">JavaScript</span>
+              <span class="skill-tag">React</span>
+              <span class="skill-tag">Node.js</span>
+              <span class="skill-tag">Python</span>
+              <span class="skill-tag">CSS/SASS</span>
+              <span class="skill-tag">Git</span>
+              <span class="skill-tag">MongoDB</span>
+              <span class="skill-tag">UI/UX Design</span>
+            </div>
+          </div>
+        </div>
+          <div class="about-collage">
+            <img src="images/1.JPG" alt="Me coding" class="collage-img">
+            <img src="images/2.jpg" alt="Travel photo" class="collage-img">
+            <img src="images/3.jpg" alt="Conference photo" class="collage-img">
+            <img src="images/4.jpeg" alt="Hobby photo" class="collage-img">
+          </div>
+      </div>
     </section>
    
     <!-- PROJECTS -->
     <section id="projects" class="projects">
-      <h2 class="section-title">Projects</h2> <!-- FIX: h1 → h2 -->
-      <p>Here you can showcase your work, projects, and portfolio pieces. Add descriptions, links, and images of your best work.</p>
+      <h2 class="section-title">Projects</h2>
+      <div class="projects-grid">
+        <div class="project-card">
+          <div class="project-image">
+            <img src="images/leaf.png" alt="Project 1 screenshot">
+          </div>
+          <div class="project-content">
+            <h3>E-Commerce Platform</h3>
+            <p>A full-stack e-commerce solution built with React and Node.js. Features include user authentication, payment processing, inventory management, and responsive design. Integrated with Stripe for secure payments and MongoDB for data storage.</p>
+            <div class="project-tech">
+              <span class="tech-tag">React</span>
+              <span class="tech-tag">Node.js</span>
+              <span class="tech-tag">MongoDB</span>
+              <span class="tech-tag">Stripe API</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="project-card">
+          <div class="project-image">
+            <img src="https://via.placeholder.com/400x250/667eea/ffffff?text=Project+2" alt="Project 2 screenshot">
+          </div>
+          <div class="project-content">
+            <h3>Task Management App</h3>
+            <p>A collaborative task management application with real-time updates. Built with Vue.js and Firebase, featuring drag-and-drop functionality, team collaboration tools, and automated notifications. Designed with a focus on user experience and productivity.</p>
+            <div class="project-tech">
+              <span class="tech-tag">Vue.js</span>
+              <span class="tech-tag">Firebase</span>
+              <span class="tech-tag">Vuex</span>
+              <span class="tech-tag">CSS Grid</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="project-card">
+          <div class="project-image">
+            <img src="https://via.placeholder.com/400x250/9b59b6/ffffff?text=Project+3" alt="Project 3 screenshot">
+          </div>
+          <div class="project-content">
+            <h3>Weather Analytics Dashboard</h3>
+            <p>An interactive weather dashboard that visualizes climate data using D3.js and Chart.js. Features include historical data analysis, weather predictions, and customizable charts. Built with Python Flask backend and REST API integration.</p>
+            <div class="project-tech">
+              <span class="tech-tag">Python</span>
+              <span class="tech-tag">Flask</span>
+              <span class="tech-tag">D3.js</span>
+              <span class="tech-tag">Chart.js</span>
+            </div>
+          </div>
+        </div>
+      </div>
     </section>
    
     <!-- CONTACT -->
-    <section id="contact" class="contact"> <!-- FIX: added missing section -->
-      <h2 class="section-title">Contact</h2>
-      <p>Email: <a href="mailto:your@email.com">your@email.com</a></p>
-      <p>Or connect with me via the links above.</p>
+    <section id="contact" class="contact">
+      <h2 class="section-title">Get In Touch</h2>
+      <div class="contact-content">
+        <div class="contact-text">
+          <h3>Let's Work Together</h3>
+          <p>I'm always open to discussing new opportunities, interesting projects, or potential collaborations. Whether you have a specific project in mind or just want to connect, I'd love to hear from you.</p>
+          
+          <div class="contact-info">
+            <div class="contact-item">
+              <i class="fas fa-envelope"></i>
+              <div>
+                <h4>Email</h4>
+                <a href="mailto:your@email.com">your@email.com</a>
+              </div>
+            </div>
+            <div class="contact-item">
+              <i class="fas fa-phone"></i>
+              <div>
+                <h4>Phone</h4>
+                <span>+1 (555) 123-4567</span>
+              </div>
+            </div>
+            <div class="contact-item">
+              <i class="fas fa-map-marker-alt"></i>
+              <div>
+                <h4>Location</h4>
+                <span>Your City, State</span>
+              </div>
+            </div>
+          </div>
+          
+          <p class="cta-text">Ready to start a conversation? Drop me a line or connect with me on social media!</p>
+        </div>
+      </div>
     </section>
   </div>
   <script src="script.js"></script>
