@@ -321,6 +321,7 @@ class EnhancedBackgroundSystem {
     this.cursorTrails = [];
     this.lastMouseX = 0;
     this.lastMouseY = 0;
+    this.isTouch = matchMedia('(hover: none), (pointer: coarse)').matches;
     this.init();
   }
 
@@ -354,7 +355,8 @@ class EnhancedBackgroundSystem {
     const particlesContainer = document.createElement('div');
     particlesContainer.className = 'bg-particles';
     
-    for (let i = 0; i < 15; i++) {
+    const initialCount = this.isTouch ? 6 : 15;
+    for (let i = 0; i < initialCount; i++) {
       setTimeout(() => {
         this.createParticle(particlesContainer);
       }, i * 1000);
@@ -362,9 +364,10 @@ class EnhancedBackgroundSystem {
     
     document.body.appendChild(particlesContainer);
     
+    const spawnInterval = this.isTouch ? 3500 : 2000;
     setInterval(() => {
       this.createParticle(particlesContainer);
-    }, 2000);
+    }, spawnInterval);
   }
 
   createParticle(container) {
@@ -393,7 +396,8 @@ class EnhancedBackgroundSystem {
     const beamsContainer = document.createElement('div');
     beamsContainer.className = 'light-beams';
     
-    for (let i = 0; i < 3; i++) {
+    const beamCount = this.isTouch ? 1 : 3;
+    for (let i = 0; i < beamCount; i++) {
       const beam = document.createElement('div');
       beam.className = 'light-beam';
       beamsContainer.appendChild(beam);
@@ -403,7 +407,8 @@ class EnhancedBackgroundSystem {
   }
 
   createCursorTrails() {
-    for (let i = 0; i < 8; i++) {
+    const trailCount = this.isTouch ? 0 : 8;
+    for (let i = 0; i < trailCount; i++) {
       const trail = document.createElement('div');
       trail.className = 'cursor-trail';
       trail.style.zIndex = 5000 - i; // Lower z-index to avoid conflicts
@@ -637,6 +642,7 @@ document.addEventListener('DOMContentLoaded', () => {
   });
   
   // Initialize enhanced background system
+  const isTouch = matchMedia('(hover: none), (pointer: coarse)').matches;
   const backgroundSystem = new EnhancedBackgroundSystem();
   const performanceMonitor = new BackgroundPerformanceMonitor();
   
@@ -719,7 +725,7 @@ document.addEventListener('DOMContentLoaded', () => {
   
   // Initialize cursor
   const cursor = document.querySelector('.cursor');
-  if (cursor) {
+  if (cursor && !isTouch) {
     new PhysicsCursor(cursor);
   }
   

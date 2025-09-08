@@ -63,7 +63,7 @@ section.in-viewport .section-title:not(.hero .section-title) {
 /* Sections with morphing backgrounds */
 section {
   min-height: 100vh;
-  padding: 60px;
+  padding: clamp(24px, 6vw, 60px);
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -131,9 +131,9 @@ section.scroll-dark-3 {
 
 .hero h1 {
   position: absolute;
-  bottom: 200px;   /* distance from bottom */
-  left: -200px;     /* distance from left */
-  font-size: clamp(36px, 100vw, 200px);
+  bottom: clamp(80px, 22vw, 200px);   /* distance from bottom */
+  left: clamp(-120px, -12vw, -200px);     /* distance from left */
+  font-size: clamp(28px, 14vw, 180px);
   font-weight: 1000;
   line-height: 1.05;
   margin: 0;
@@ -153,6 +153,12 @@ section.scroll-dark-3 {
   display: inline-block;
   transition: transform 0.2s linear, opacity 0.2s linear;
   will-change: transform, opacity;
+}
+
+/* Prevent the hero title from wrapping to additional lines */
+.scatter-text {
+  white-space: nowrap;
+  display: inline-block;
 }
 
 .scatter-text .char:last-child {
@@ -371,6 +377,11 @@ section.in-viewport + section::after {
   box-shadow: 0 0 20px rgba(26, 26, 26, 0.4); /* Black shadow */
 }
 
+/* Hide the custom cursor on touch devices */
+@media (hover: none), (pointer: coarse) {
+  .cursor { display: none; }
+}
+
 /* Cursor morphs based on section */
 body.hero-active .cursor {
   background: radial-gradient(circle, #1a1a1a 0%, #333 100%);
@@ -473,7 +484,7 @@ section.in-viewport .section-title {
   position: absolute;
   bottom: 200px;   /* distance from bottom */
   left: -200px;     /* distance from left */
-  font-size: clamp(36px, 100vw, 200px);
+  font-size: clamp(28px, 18vw, 180px);
   font-weight: 1000;
   line-height: 1.05;
   margin: 0;
@@ -536,20 +547,20 @@ section.in-viewport p:nth-child(4) { transition-delay: 0.6s; }
   .nav-container {
     flex-direction: column;
     gap: 20px;
-    padding: 0 30px; /* Remove extra left padding if not needed */
+    padding: 0 20px; /* tighter padding on small screens */
     align-items: center; /* Center everything for better mobile layout */
   }
   
   .nav-links {
     flex-direction: column; /* Stack links vertically */
     gap: 15px;
-    width: 100%; /* Full width */
+    width: 100%;
     align-items: center; /* Center links */
   }
   
   .nav-links a {
-    width: 80%; /* Make buttons wider for touch */
-    max-width: 200px; /* Prevent too wide */
+    width: min(90%, 280px); /* wider tap targets */
+    max-width: 280px; /* Prevent too wide */
     text-align: center;
   }
   
@@ -982,14 +993,14 @@ section.in-viewport::after {
 .about {
   display: flex;
   justify-content: center; /* center the content horizontally */
-  padding: 4rem 2rem;      /* add vertical & horizontal spacing */
+  padding: clamp(2rem, 6vw, 4rem) clamp(1rem, 4vw, 2rem);      /* add vertical & horizontal spacing */
 }
 
 .about-content {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  gap: 2rem;              /* space between text and collage */
+  gap: clamp(1rem, 3vw, 2rem);              /* space between text and collage */
   max-width: 1500px;      /* constrain total width */
   width: 100%;             /* responsive */
 }
@@ -997,7 +1008,7 @@ section.in-viewport::after {
 
 
 .about-text {
-  font-size: 18px;
+  font-size: clamp(16px, 2.2vw, 18px);
   max-width: 1000px;
   line-height: 1.8;
   color: #444;
@@ -1082,7 +1093,7 @@ section.in-viewport::after {
 /* Projects Section Enhancements */
 .projects-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(380px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
   gap: 40px;
   max-width: 1400px;
   margin: 60px auto 0;
@@ -1396,6 +1407,12 @@ section.in-viewport::after {
 
 /* Responsive */
 @media (max-width: 1024px) {
+  .section-title {
+    margin-bottom: 28px;
+  }
+  section {
+    min-height: auto;
+  }
   .contact-content {
     flex-direction: column;
     align-items: center;
@@ -1478,6 +1495,14 @@ section.in-viewport .contact-item:nth-child(3) { animation-delay: 0.7s; }
 }
 
 @media (max-width: 768px) {
+  html, body {
+    font-size: 16px;
+  }
+  .hero h1 {
+    left: 5vw;
+    bottom: 18vh;
+    font-size: clamp(36px, 14vw, 72px);
+  }
   .about-content,
   .contact-content {
     gap: 30px;
@@ -1503,6 +1528,15 @@ section.in-viewport .contact-item:nth-child(3) { animation-delay: 0.7s; }
     text-align: center;
     gap: 15px;
   }
+  .nav-links a {
+    padding: 12px 18px;
+  }
+  .nav-container {
+    padding: 0 24px 0 24px;
+  }
+  .site-nav {
+    padding: 16px 0;
+  }
   
   .contact-item:hover {
     transform: translateY(-4px);
@@ -1511,6 +1545,23 @@ section.in-viewport .contact-item:nth-child(3) { animation-delay: 0.7s; }
   .profile-img,
   .contact-img {
     height: 300px;
+  }
+}
+
+/* Reduce hover transforms for touch devices for stability */
+@media (hover: none) {
+  .nav-links a:hover,
+  .project-card:hover,
+  .btn-primary:hover,
+  .btn-secondary:hover,
+  .contact-item:hover,
+  .skill-tag:hover {
+    transform: none;
+  }
+  .nav-links a:hover,
+  .btn-primary:hover,
+  .btn-secondary:hover {
+    box-shadow: none;
   }
 }
 
