@@ -577,11 +577,11 @@ function updateSectionBackgrounds() {
   const scrollY = window.pageYOffset || document.documentElement.scrollTop;
   
   const sectionColors = {
-    hero: '#faf9f6',
-    home: '#faf9f6',
-    about: '#e8e0d6',
-    projects: '#d4c4b0',
-    contact: '#c0a990'
+    hero: '#efe9dd',
+    home: '#efe9dd',
+    about: '#dfd5c6',
+    projects: '#ccbda8',
+    contact: '#baa891'
   };
   
   let activeSection = 'hero';
