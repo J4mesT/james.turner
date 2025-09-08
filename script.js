@@ -181,7 +181,7 @@ class ScatterText {
   }
   
   updateNavAnimation() {
-    const animationSpeed = 0.4;
+    const animationSpeed = 0.05;
     this.navCurrentProgress += (this.navTargetProgress - this.navCurrentProgress) * animationSpeed;
     
     this.applyNavTransforms();
@@ -202,12 +202,22 @@ class ScatterText {
     
     const isMainTitle = this.element.closest('.hero');
     if (isMainTitle) {
-      if (this.targetProgress > 0.05) {
-        this.showNavButton();
-      } else {
-        this.hideNavButton();
-      }
+      // Visibility handled explicitly in scroll handler for instant behavior
     }
+  }
+
+  // Instantly show/hide nav button (no easing)
+  showNavButtonInstant() {
+    this.isNavButtonVisible = true;
+    this.navTargetProgress = 0;
+    this.navCurrentProgress = 0;
+    this.applyNavTransforms();
+  }
+  hideNavButtonInstant() {
+    this.isNavButtonVisible = false;
+    this.navTargetProgress = 1;
+    this.navCurrentProgress = 1;
+    this.applyNavTransforms();
   }
   
   applyTransforms() {
@@ -685,13 +695,21 @@ document.addEventListener('DOMContentLoaded', () => {
     scatterTexts.forEach(scatterText => {
       const section = scatterText.element.closest('section');
       if (!section) return;
-      
+      const heroRect = section.getBoundingClientRect();
+      const heroFullyOut = heroRect.bottom <= 0; // hero no longer visible
+      const heroVisible = heroRect.bottom > 0;   // any part visible
+
+      if (heroFullyOut) {
+        scatterText.showNavButtonInstant();
+      } else if (heroVisible) {
+        scatterText.hideNavButtonInstant();
+      }
+
+      // Keep scatter transform progress logic as-is
       const sectionTop = section.offsetTop;
       const sectionHeight = section.offsetHeight;
       const sectionBottom = sectionTop + sectionHeight;
-      
       const isInViewport = sectionBottom > scrollY && sectionTop < scrollY + windowHeight;
-      
       if (isInViewport) {
         const sectionCenter = sectionTop + (sectionHeight / 2);
         const windowCenter = scrollY + (windowHeight / 2);
@@ -705,7 +723,17 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
   
-  window.addEventListener('scroll', onScroll, { passive: true });
+  // Coalesce scroll events to once-per-frame for smoother scrolling
+  let isScrollScheduled = false;
+  function scheduleScroll() {
+    if (isScrollScheduled) return;
+    isScrollScheduled = true;
+    requestAnimationFrame(() => {
+      onScroll();
+      isScrollScheduled = false;
+    });
+  }
+  window.addEventListener('scroll', scheduleScroll, { passive: true });
   
   // Resize handler
   let resizeTimeout;
@@ -763,6 +791,55 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
   
+  // 3D tilt for project cards (desktop only)
+  const isTouchDevice = matchMedia('(hover: none), (pointer: coarse)').matches;
+  if (!isTouchDevice) {
+    const tiltCards = document.querySelectorAll('.project-card');
+    const maxTilt = 8;
+    tiltCards.forEach(card => {
+      card.addEventListener('mousemove', (e) => {
+        const rect = card.getBoundingClientRect();
+        const cx = rect.left + rect.width / 2;
+        const cy = rect.top + rect.height / 2;
+        const dx = (e.clientX - cx) / (rect.width / 2);
+        const dy = (e.clientY - cy) / (rect.height / 2);
+        const rx = (-dy * maxTilt).toFixed(2);
+        const ry = (dx * maxTilt).toFixed(2);
+        card.style.transform = `perspective(1000px) rotateX(${rx}deg) rotateY(${ry}deg)`;
+      });
+      card.addEventListener('mouseleave', () => {
+        card.style.transform = '';
+      });
+    });
+  }
+
+  // Subtle parallax on about collage images
+  const collage = document.querySelector('.about-collage');
+  if (collage) {
+    const imgs = collage.querySelectorAll('img');
+    window.addEventListener('scroll', () => {
+      const rect = collage.getBoundingClientRect();
+      const progress = Math.min(Math.max(1 - Math.abs(rect.top + rect.height / 2 - window.innerHeight / 2) / (rect.height / 2), 0), 1);
+      imgs.forEach((img, i) => {
+        const offset = (i % 3 - 1) * 6 * (1 - progress);
+        img.style.transform = `translateY(${offset}px)`;
+      });
+    }, { passive: true });
+  }
   // Initial call
   onScroll();
+
+  // Animate section dividers on entering viewport
+  const dividerObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      const el = entry.target;
+      if (entry.isIntersecting) {
+        el.classList.add('visible');
+      } else {
+        el.classList.remove('visible');
+      }
+    });
+  }, { rootMargin: '0px 0px -20% 0px', threshold: 0.1 });
+
+  document.querySelectorAll('.section-divider').forEach(divider => dividerObserver.observe(divider));
 });
