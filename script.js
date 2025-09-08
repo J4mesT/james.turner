@@ -15,6 +15,7 @@ class ScatterText {
     this.navCurrentProgress = 1;
     this.navTargetProgress = 1;
     this.init();
+    this.isTouch = matchMedia('(hover: none), (pointer: coarse)').matches;
   }
   
   init() {
@@ -213,8 +214,9 @@ class ScatterText {
     this.chars.forEach((span, i) => {
       if (!this.transforms[i]) return;
       const t = this.transforms[i];
-      const x = t.x * this.currentProgress;
-      const y = t.y * this.currentProgress;
+      const scatterFactor = this.isTouch ? 0.5 : 1; // reduce scatter on touch
+      const x = t.x * this.currentProgress * scatterFactor;
+      const y = t.y * this.currentProgress * scatterFactor;
       const rot = t.rotation * this.currentProgress;
       const scale = 1 + (t.scale - 1) * this.currentProgress;
       span.style.transform = `translate(${x}px, ${y}px) rotate(${rot}deg) scale(${scale})`;
