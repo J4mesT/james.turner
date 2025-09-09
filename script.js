@@ -642,21 +642,26 @@ function updateSectionBackgrounds() {
 
 // Main initialization (consolidated)
 document.addEventListener('DOMContentLoaded', () => {
-  // Initialize scatter text system
+  // Initialize scatter text system with mobile optimizations
   const titleElements = document.querySelectorAll('.scatter-text');
   let scatterTexts = [];
+  const isTouch = matchMedia('(hover: none), (pointer: coarse)').matches;
   
   titleElements.forEach(element => {
     const isHeroTitle = element.closest('.hero');
     if (isHeroTitle) {
+      // Reduce scatter effect intensity on mobile
+      element.dataset.scatterIntensity = isTouch ? '0.5' : '1';
       scatterTexts.push(new ScatterText(element));
     }
   });
   
-  // Initialize enhanced background system
-  const isTouch = matchMedia('(hover: none), (pointer: coarse)').matches;
-  const backgroundSystem = new EnhancedBackgroundSystem();
-  const performanceMonitor = new BackgroundPerformanceMonitor();
+  // Only initialize background effects on desktop
+  let backgroundSystem, performanceMonitor;
+  if (!isTouch) {
+    backgroundSystem = new EnhancedBackgroundSystem();
+    performanceMonitor = new BackgroundPerformanceMonitor();
+  }
   
   // Animation loop for scatter text
   function animate() {
