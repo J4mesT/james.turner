@@ -578,30 +578,36 @@ section.in-viewport p:nth-child(4) { transition-delay: 0.6s; }
 /* Responsive adjustments */
 @media (max-width: 768px) {
   .nav-container {
-    flex-direction: column;
-    gap: 20px;
+    flex-direction: row;
+    gap: 12px;
     padding: 0 20px; /* tighter padding on small screens */
     align-items: center; /* Center everything for better mobile layout */
+    justify-content: space-between;
   }
   
   .nav-links {
-    flex-direction: column; /* Stack links vertically */
-    gap: 15px;
-    width: 100%;
-    align-items: center; /* Center links */
+    flex-direction: row; /* Keep links in a single row */
+    gap: 12px;
+    width: auto;
+    align-items: center;
+    flex-wrap: nowrap;
+    overflow-x: auto; /* allow horizontal scroll if needed */
+    -webkit-overflow-scrolling: touch;
   }
   
   .nav-links a {
-    width: min(90%, 280px); /* wider tap targets */
-    max-width: 280px; /* Prevent too wide */
+    width: auto;
+    max-width: none;
     text-align: center;
+    padding: 8px 12px; /* smaller pills on mobile */
+    font-size: 14px;
   }
   
   .social-links {
     justify-content: center; /* Center social icons */
   }
   
-  /* Adjust nav-title-button for mobile stacking */
+  /* Adjust nav-title-button for mobile */
   .nav-title-button {
     left: 50% !important;
     transform: translateX(-50%) !important; /* Center it */
@@ -1568,14 +1574,14 @@ section.in-viewport .contact-item:nth-child(3) { animation-delay: 0.7s; }
     font-size: 16px;
   }
   .site-nav {
-    padding: calc(env(safe-area-inset-top, 0px) + 10px) 0 10px 0;
+    padding: calc(env(safe-area-inset-top, 0px) + 8px) 0 8px 0; /* slimmer bar */
     background: rgba(239, 233, 221, 0.92);
     backdrop-filter: blur(14px);
     -webkit-backdrop-filter: blur(14px);
     border-bottom: 1px solid rgba(26, 26, 26, 0.08);
   }
   #scroll-container {
-    padding-top: calc(env(safe-area-inset-top, 0px) + 64px);
+    padding-top: calc(env(safe-area-inset-top, 0px) + 56px); /* match slimmer nav */
   }
   .hero h1 {
     left: 5vw;
@@ -1613,9 +1619,7 @@ section.in-viewport .contact-item:nth-child(3) { animation-delay: 0.7s; }
   .nav-container {
     padding: 0 24px 0 24px;
   }
-  .site-nav {
-    padding: 16px 0;
-  }
+  /* keep nav padding unified via the rule above */
   
   .contact-item:hover {
     transform: translateY(-4px);
