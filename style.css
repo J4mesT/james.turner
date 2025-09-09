@@ -1629,6 +1629,50 @@ section.in-viewport .contact-item:nth-child(3) { animation-delay: 0.7s; }
   .contact-img {
     height: 300px;
   }
+
+  /* Disable heavy scroll-in animations on mobile for stability */
+  section.in-viewport .about-content,
+  section.in-viewport .projects-grid,
+  section.in-viewport .contact-content {
+    animation: none !important;
+  }
+  section.in-viewport .project-card:nth-child(n),
+  section.in-viewport .contact-item:nth-child(n) {
+    animation: none !important;
+  }
+
+  /* Simplify title effects on mobile */
+  .section-title {
+    text-shadow: none;
+    transition: none;
+    background-size: 100% 100%;
+    background-position: 50% 50% !important;
+  }
+  section.in-viewport .section-title {
+    transform: none !important;
+    opacity: 1 !important;
+    filter: none !important;
+  }
+
+  /* Disable scatter transitions for better performance */
+  .scatter-text .char,
+  .nav-title-button .nav-char {
+    transition: none !important;
+    transform: none !important;
+    opacity: 1 !important;
+  }
+
+  /* Reduce decorative divider animation */
+  .section-divider svg path {
+    transition: none !important;
+    opacity: 1;
+    transform: none;
+  }
+
+  /* Disable section overlay sheen for less paint work */
+  section::after {
+    display: none;
+  }
 }
 
 /* Reduce hover transforms for touch devices for stability */
