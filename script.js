@@ -669,6 +669,7 @@ document.addEventListener('DOMContentLoaded', () => {
   function onScroll() {
     const scrollY = window.pageYOffset || document.documentElement.scrollTop;
     const windowHeight = window.innerHeight;
+    const TOP_FREEZE_THRESHOLD = 20; // px before starting hero title animation on touch
     
     updateSectionBackgrounds();
     
@@ -705,7 +706,13 @@ document.addEventListener('DOMContentLoaded', () => {
         scatterText.hideNavButtonInstant();
       }
 
-      // Keep scatter transform progress logic as-is
+      // On touch devices, freeze hero title at top and during rubber-band overscroll
+      if (isTouch && heroVisible && (scrollY <= TOP_FREEZE_THRESHOLD || heroRect.top > 0)) {
+        scatterText.setTargetProgress(0);
+        return;
+      }
+
+      // Keep scatter transform progress logic otherwise
       const sectionTop = section.offsetTop;
       const sectionHeight = section.offsetHeight;
       const sectionBottom = sectionTop + sectionHeight;

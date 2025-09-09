@@ -1036,12 +1036,12 @@ section.in-viewport::after {
 }
 
 .about-content {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  gap: clamp(1rem, 3vw, 2rem);              /* space between text and collage */
-  max-width: 1500px;      /* constrain total width */
-  width: 100%;             /* responsive */
+  display: grid;
+  grid-template-columns: 1fr minmax(360px, 860px) 1fr; /* left collage, text, right collage */
+  align-items: stretch; /* stretch side collages to fill text height */
+  gap: clamp(1rem, 3vw, 2rem);
+  max-width: none; /* allow full-width to edges (within section padding) */
+  width: 100%;
 }
 
 
@@ -1337,16 +1337,18 @@ section.in-viewport::after {
 }
 
 /* Contact Section Container */
+.contact { min-height: auto; }
 .contact-content {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: space-between;
-  align-items: flex-start;
-  max-width: 1200px;
+  /* Redesign: compact 2x2 grid */
+  display: grid;
+  grid-template-columns: repeat(2, minmax(260px, 1fr));
+  gap: 20px;
+  align-items: stretch;
+  justify-items: stretch;
+  max-width: 1320px; /* allow wider tiles */
   margin: 0 auto;
-  gap: 60px;
+  padding: 1.5rem 1rem;
   text-align: left;
-  padding: 4rem 2rem;
 }
 
 /* Left: Text & CTA */
@@ -1418,22 +1420,28 @@ section.in-viewport::after {
 /* Contact Info Cards */
 .contact-info {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: 24px;
-  margin-top: 48px;
+  grid-template-columns: repeat(2, minmax(520px, 620px));
+  gap: 20px;
+  margin-top: 0;
   width: 100%;
+  justify-content: center; /* center the grid block */
+  justify-items: stretch; /* tiles fill their column */
 }
 
 .contact-item {
   display: flex;
   align-items: center;
-  gap: 20px;
-  padding: 24px;
-  background: rgba(26,26,26,0.05);
-  border-radius: 20px;
+  gap: 16px;
+  padding: 24px 26px;
+  background: rgba(239, 233, 221, 0.85);
+  border-radius: 16px;
   border: 1px solid rgba(26,26,26,0.08);
-  backdrop-filter: blur(10px);
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 6px 24px rgba(26,26,26,0.12);
+  backdrop-filter: blur(12px);
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+  height: 100%;
+  min-height: 120px; /* make tiles longer */
+  width: 100%; /* fill the assigned grid column */
 }
 
 .contact-item i {
@@ -1449,9 +1457,9 @@ section.in-viewport::after {
 }
 
 .contact-item:hover {
-  background: rgba(26,26,26,0.1);
-  transform: translateY(-4px) scale(1.02);
-  box-shadow: 0 10px 30px rgba(26,26,26,0.12);
+  background: rgba(239, 233, 221, 0.95);
+  transform: translateY(-3px);
+  box-shadow: 0 14px 36px rgba(26,26,26,0.16);
 }
 
 .contact-item:hover i {
@@ -1461,10 +1469,10 @@ section.in-viewport::after {
 }
 
 .contact-item div h4 {
-  font-weight: 600;
+  font-weight: 700;
   color: #1a1a1a;
   font-size: 16px;
-  margin-bottom: 4px;
+  margin-bottom: 2px;
 }
 
 .contact-item div span,
@@ -1473,11 +1481,38 @@ section.in-viewport::after {
   font-size: 15px;
   text-decoration: none;
   transition: color 0.3s ease;
+  overflow-wrap: anywhere; /* allow long emails/URLs to wrap */
+  word-break: break-word;
 }
 
 .contact-item:hover div span,
 .contact-item:hover div a {
   color: #333;
+}
+
+/* Subtle background glow to reduce emptiness */
+.contact {
+  position: relative;
+}
+.contact::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(600px 220px at 50% 10%, rgba(26,26,26,0.05), transparent 60%),
+    radial-gradient(400px 200px at 0% 40%, rgba(26,26,26,0.04), transparent 60%),
+    radial-gradient(400px 200px at 100% 70%, rgba(26,26,26,0.04), transparent 60%);
+  pointer-events: none;
+}
+
+/* Entrance animation for contact cards (desktop only) */
+@media (hover: hover) and (min-width: 769px) {
+  .contact-item { opacity: 0; transform: translateY(16px); }
+  section.in-viewport .contact-item { opacity: 1; transform: translateY(0); transition: opacity 0.35s ease, transform 0.35s ease; }
+  section.in-viewport .contact-item:nth-child(1) { transition-delay: 0.05s; }
+  section.in-viewport .contact-item:nth-child(2) { transition-delay: 0.10s; }
+  section.in-viewport .contact-item:nth-child(3) { transition-delay: 0.15s; }
+  section.in-viewport .contact-item:nth-child(4) { transition-delay: 0.20s; }
 }
 
 /* Responsive */
@@ -1488,19 +1523,24 @@ section.in-viewport::after {
   section {
     min-height: auto;
   }
-  .contact-content {
-    flex-direction: column;
-    align-items: center;
-    text-align: center;
-  }
+  .contact-content { grid-template-columns: 1fr; max-width: 720px; padding: 1rem; }
 
   .contact-text, .contact-img-container {
     flex: 1 1 100%;
   }
 
-  .contact-info {
-    grid-template-columns: 1fr;
-  }
+  .contact-info { grid-template-columns: 1fr; }
+}
+
+/* Force two wide columns on large screens */
+@media (min-width: 1200px) {
+  .contact-info { grid-template-columns: repeat(2, 620px); }
+}
+
+/* Wider layouts: reduce empty space by using up to 4 columns */
+@media (min-width: 1200px) {
+  .contact-content { max-width: 1400px; }
+  .contact-info { grid-template-columns: repeat(4, minmax(220px, 1fr)); }
 }
 
 .cta-text {
@@ -1552,7 +1592,8 @@ section.in-viewport .contact-item:nth-child(3) { animation-delay: 0.7s; }
 
 /* Responsive Design for Subsections */
 @media (max-width: 1024px) {
-  .about-content,
+  .about-content { grid-template-columns: 1fr; }
+  .about-collage.left, .about-collage.right { max-width: 100%; justify-self: center; }
   .contact-content {
     grid-template-columns: 1fr;
     gap: 40px;
@@ -1590,9 +1631,10 @@ section.in-viewport .contact-item:nth-child(3) { animation-delay: 0.7s; }
   }
   .about-content,
   .contact-content {
-    gap: 30px;
+    gap: 24px;
     padding: 0 20px;
   }
+  .about-collage { grid-auto-rows: 90px; }
   
   .projects-grid {
     grid-template-columns: 1fr;
@@ -1700,7 +1742,8 @@ section.in-viewport .contact-item:nth-child(3) { animation-delay: 0.7s; }
   .projects-grid { grid-template-columns: 1fr; gap: 24px; }
   .btn-primary, .btn-secondary { padding: 12px 20px; font-size: 14px; }
   .about { padding: 1.5rem 1rem; }
-  .about-collage { grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); grid-auto-rows: 90px; }
+  .about-collage { grid-template-columns: 1fr; grid-auto-rows: 120px; }
+  section.in-viewport .about-collage img { animation-duration: 600ms; }
 }
 
 /* Performance optimizations */
@@ -1728,33 +1771,42 @@ section.in-viewport .contact-item:nth-child(3) { animation-delay: 0.7s; }
   }
 }
 .about-collage {
-  flex: 1; /* fill remaining space */
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-  grid-auto-rows: 100px; /* base row height */
-  gap: 12px;
+  column-count: 2; /* masonry-style columns preserve intrinsic aspect */
+  column-gap: 10px;
 }
+.about-collage.left { justify-self: end; }
+.about-collage.right { justify-self: start; }
 
 /* make images span multiple rows for creative effect */
 .about-collage img {
   width: 100%;
-  height: 100%;
-  object-fit: cover;
+  height: auto; /* preserve original aspect ratio */
+  display: block;
+  break-inside: avoid; /* prevent column breaks inside items */
   border-radius: 10px;
   box-shadow: 0 4px 8px rgba(0,0,0,0.15);
   transition: transform 0.3s ease;
+  margin-bottom: 10px; /* space between items in columns */
 }
 
 /* Example: some images taller than others */
-.about-collage img:nth-child(1) {
-  grid-row: span 2;
+/* Remove grid-span rules to avoid aspect distortion; masonry columns handle flow */
+
+@keyframes collageReveal {
+  0% { opacity: 0; transform: translateY(24px) scale(0.98); filter: blur(2px); }
+  100% { opacity: 1; transform: translateY(0) scale(1); filter: blur(0); }
 }
-.about-collage img:nth-child(4) {
-  grid-row: span 3;
-}
-.about-collage img:nth-child(5) {
-  grid-row: span 2;
-}
+
+.about-collage img { opacity: 0; transform: translateY(24px) scale(0.98); filter: blur(2px); }
+section.in-viewport .about-collage img { animation: collageReveal 700ms cubic-bezier(0.4, 0, 0.2, 1) forwards; }
+section.in-viewport .about-collage img:nth-child(1) { animation-delay: 0s; }
+section.in-viewport .about-collage img:nth-child(2) { animation-delay: 0.06s; }
+section.in-viewport .about-collage img:nth-child(3) { animation-delay: 0.12s; }
+section.in-viewport .about-collage img:nth-child(4) { animation-delay: 0.18s; }
+section.in-viewport .about-collage img:nth-child(5) { animation-delay: 0.24s; }
+section.in-viewport .about-collage img:nth-child(6) { animation-delay: 0.30s; }
+section.in-viewport .about-collage img:nth-child(7) { animation-delay: 0.36s; }
+section.in-viewport .about-collage img:nth-child(8) { animation-delay: 0.42s; }
 
 .about-collage img:hover {
   transform: scale(1.03);
@@ -1762,14 +1814,22 @@ section.in-viewport .contact-item:nth-child(3) { animation-delay: 0.7s; }
 .download-link {
   display: inline-block;
   margin-top: 10px;
-  padding: 8px 12px;
-  background: #6b5b95;
-  color: #fff;
-  border-radius: 6px;
+  padding: 14px 28px; /* match btn-primary */
+  background: #1a1a1a;
+  color: #faf9f6;
+  border-radius: 50px;
   text-decoration: none;
   font-weight: 600;
-  transition: background 0.3s ease;
+  font-size: 14px;
+  box-shadow: 0 8px 25px rgba(26, 26, 26, 0.15);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 .download-link:hover {
-  background: #574779;
+  transform: translateY(-3px) scale(1.05);
+  box-shadow: 0 15px 40px rgba(26, 26, 26, 0.25);
+  background: #333;
+}
+.download-link i {
+  margin-right: 8px;
+  vertical-align: middle;
 }
