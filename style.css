@@ -626,19 +626,26 @@ section.in-viewport p:nth-child(4) { transition-delay: 0.6s; }
 
   .hero {
     min-height: 100vh;
+    height: 100vh; /* Force exact viewport height */
     display: flex;
-    align-items: center; /* Center content vertically */
-    padding-top: 32px; /* Reduce top padding significantly */
+    align-items: flex-start; /* Align to top */
+    padding-top: 10vh; /* Significantly reduced top padding */
+    box-sizing: border-box; /* Include padding in height calculation */
   }
 
   .hero h1 {
     font-size: clamp(24px, 10vw, 42px);
     left: 16px;
-    bottom: auto; /* Remove bottom positioning */
-    top: 50%; /* Position from top */
-    transform: translateY(-50%); /* Center vertically */
-    position: relative; /* Change to relative positioning */
-    margin-top: -15vh; /* Pull up slightly from center */
+    position: relative;
+    margin: 0;
+    padding: 0;
+    transform: none;
+  }
+
+  /* Adjust intro text size on mobile */
+  .hero .intro-text {
+    font-size: 0.5em;
+    margin-bottom: 0.5em;
   }
 
   .section-title {
@@ -647,7 +654,9 @@ section.in-viewport p:nth-child(4) { transition-delay: 0.6s; }
   }
 
   section {
-    padding: clamp(32px, 8vh, 60px) 16px; /* Reduced padding */
+    padding: 16px;
+    min-height: auto; /* Remove minimum height constraint */
+    height: auto; /* Allow content to determine height */
   }
 
   .about-content {
