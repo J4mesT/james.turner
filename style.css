@@ -596,6 +596,10 @@ section.in-viewport p:nth-child(4) { transition-delay: 0.6s; }
   .site-nav {
     display: none; /* Hide the top navigation bar on mobile */
   }
+  
+  .nav-title-button {
+    display: none !important; /* Hide the small title text on mobile */
+  }
 
   .nav-links {
     position: fixed;
