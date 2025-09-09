@@ -593,8 +593,8 @@ section.in-viewport p:nth-child(4) { transition-delay: 0.6s; }
 
 /* Responsive adjustments */
 @media (max-width: 768px) {
-  .nav-container {
-    padding: 0 16px;
+  .site-nav {
+    display: none; /* Hide the top navigation bar on mobile */
   }
 
   .nav-links {
