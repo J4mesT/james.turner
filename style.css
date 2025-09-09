@@ -40,13 +40,8 @@ html {
   line-height: 1.05;
   margin: 0 0 40px 0;
   text-align: center;
-  color: transparent;
-  background: linear-gradient(90deg, #1a1a1a 0%, #6b5b4a 50%, #1a1a1a 100%);
-  -webkit-background-clip: text;
-  background-clip: text;
-  transition: background-position 1s ease;
-  background-size: 200% 100%;
-  background-position: 0% 50%;
+  color: #000000; /* Solid black */
+  transition: color 0.3s ease;
   padding-bottom: 0.15em; /* Prevent descenders from clipping */
   transform: none;   /* No intro shift */
   opacity: 1;        /* Fully visible */
@@ -361,26 +356,29 @@ section.in-viewport + section::after {
   padding: 0;
 }
 
-.social-links a {
-  width: 45px;
+.social-links a,
+.social-links a.email-button {
+  width: 65px;
   height: 45px;
-  border-radius: 50%;
-  background: rgba(239, 233, 221, 0.85); /* Beige with transparency */
+  border-radius: 25px;
+  background: #1a1a1a; /* Black background */
   backdrop-filter: blur(10px);
-  border: 1px solid rgba(26, 26, 26, 0.15); /* Subtle black border */
-  color: #1a1a1a; /* Deep black */
+  border: 1px solid rgba(26, 26, 26, 0.3);
+  color: #efe9dd; /* Light text color */
   font-size: 18px;
   display: flex;
   align-items: center;
   justify-content: center;
   text-decoration: none;
   transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(26, 26, 26, 0.2);
 }
 
-.social-links a:hover {
+.social-links a:hover,
+.social-links a.email-button:hover {
   transform: translateY(-4px) scale(1.15);
-  background: #1a1a1a; /* Black background on hover */
-  color: #faf9f6; /* Cream text on hover */
+  background: #000000; /* Darker black on hover */
+  color: #ffffff; /* Bright white text on hover */
   box-shadow: 0 12px 30px rgba(26, 26, 26, 0.3),
               0 0 10px rgba(26, 26, 26, 0.5);
 }
@@ -1685,12 +1683,8 @@ section.in-viewport::after {
   background: rgba(239, 233, 221, 0.95);
   border-radius: 24px;
   border: 1px solid rgba(26, 26, 26, 0.08);
-  box-shadow: 
-    0 4px 24px -1px rgba(26, 26, 26, 0.08),
-    0 2px 8px -1px rgba(26, 26, 26, 0.06);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 4px 24px -1px rgba(26, 26, 26, 0.08);
+  transition: all 0.3s ease;
   height: auto;
   min-height: 100px;
   width: auto;
@@ -1698,45 +1692,7 @@ section.in-viewport::after {
   max-width: 540px;
   box-sizing: border-box;
   position: relative;
-  overflow: hidden;
-  background-image: linear-gradient(
-    135deg,
-    rgba(239, 233, 221, 0.98) 0%,
-    rgba(223, 213, 198, 0.95) 100%
-  );
-}
-
-/* Animated gradient border effect */
-.contact-item::before {
-  content: '';
-  position: absolute;
-  top: -2px;
-  left: -2px;
-  right: -2px;
-  bottom: -2px;
-  background: linear-gradient(45deg, #1a1a1a, #666, #1a1a1a);
-  border-radius: 18px;
-  z-index: -1;
-  opacity: 0;
-  transition: opacity 0.4s ease;
-}
-
-/* Animated shine effect */
-.contact-item::after {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: -100%;
-  width: 50%;
-  height: 100%;
-  background: linear-gradient(
-    90deg,
-    transparent,
-    rgba(255, 255, 255, 0.2),
-    transparent
-  );
-  transform: skewX(-25deg);
-  transition: 0.75s ease;
+  color: #1a1a1a;
 }
 
 .contact-item i {
@@ -1764,32 +1720,22 @@ section.in-viewport::after {
 }
 
 .contact-item:hover {
-  background: rgba(239, 233, 221, 0.98);
-  transform: translateY(-5px);
-  box-shadow: 
-    0 20px 40px -5px rgba(26, 26, 26, 0.12),
-    0 8px 16px -2px rgba(26, 26, 26, 0.08);
-  background-image: linear-gradient(
-    135deg,
-    rgba(239, 233, 221, 1) 0%,
-    rgba(223, 213, 198, 0.98) 100%
-  );
+  transform: translateY(-4px);
+  box-shadow: 0 8px 32px -4px rgba(26, 26, 26, 0.15);
+  background: rgba(239, 233, 221, 1);
 }
 
-.contact-item:hover::before {
-  opacity: 1;
-}
-
-.contact-item:hover::after {
-  left: 150%;
-}
-
-.contact-item:hover i {
-  background: #1a1a1a;
-  color: #efe9dd;
-  transform: scale(1.05);
-  box-shadow: 
-    0 8px 16px rgba(26, 26, 26, 0.12);
+.contact-item i {
+  font-size: 24px;
+  width: 54px;
+  height: 54px;
+  border-radius: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(26, 26, 26, 0.05);
+  color: #1a1a1a;
+  transition: all 0.3s ease;
 }
 
 .contact-item div h4 {
@@ -1810,7 +1756,6 @@ section.in-viewport::after {
   word-break: break-word;
   letter-spacing: 0.02em;
   line-height: 1.5;
-  opacity: 0.9;
 }
 
 .contact-item:hover div span,
