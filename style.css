@@ -356,6 +356,17 @@ section.in-viewport + section::after {
   padding: 0;
 }
 
+.social-links a i.fab,
+.social-links a i.fas,
+.social-links a i.fa-github,
+.social-links a i.fa-linkedin,
+.social-links a i.fa-envelope {
+  animation: none !important;
+  animation-duration: 0s !important;
+  transform: none !important;
+  transition: none !important;
+}
+
 .social-links a,
 .social-links a.email-button {
   width: 65px;
@@ -370,13 +381,13 @@ section.in-viewport + section::after {
   align-items: center;
   justify-content: center;
   text-decoration: none;
-  transition: all 0.3s ease;
+  transition: transform 0.3s ease;
   box-shadow: 0 4px 12px rgba(26, 26, 26, 0.2);
 }
 
 .social-links a:hover,
 .social-links a.email-button:hover {
-  transform: translateY(-4px) scale(1.15);
+  transform: scale(1.15);
   background: #000000; /* Darker black on hover */
   color: #ffffff; /* Bright white text on hover */
   box-shadow: 0 12px 30px rgba(26, 26, 26, 0.3),
